@@ -1,0 +1,88 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* SidebarMenu.css */
+.sidebar-wrapper {
+  transition: width 0.3s;
+}
+
+.sidebar-header {
+  height: 60px;
+  display: flex;
+  background-color: #51555c;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 15px;
+  color: rgb(0, 0, 0);
+}
+
+.company-name {
+  font-size: 16px;
+}
+
+.toggle-btn {
+  height: 40px;
+  width: 40px;
+  display: flex;
+  justify-content: right;
+  align-items: center;
+  cursor: pointer;
+}
+
+.hidden {
+  display: none;
+}
+
+.collapsed .company-name {
+  display: none;
+}
+
+.collapsed .toggle-btn {
+  width: 100%;
+  justify-content: flex-start;
+  padding-left: 20px;
+}
+.company-name {
+  opacity: 1; 
+  transition: opacity 5s ease; 
+}
+
+.company-name.hidden {
+  opacity: 0; 
+}
