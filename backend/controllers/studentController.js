@@ -1,0 +1,156 @@
+const ErrorHandler = require("../utils/errorHandler");
+const catchAsyncErrors = require("../middlewares/cathAsyncErrorsMiddleware");
+const sendToken = require("../utils/jwtToken");
+const asyncHandler = require("express-async-handler");
+const dotenv = require("dotenv");
+const db = require("../config/database");
+dotenv.config({ path: "backend/config/config.env" });
+//  Register new us
+
+exports.createStudent = async (req, res, next) => {
+  console.log(req.body);
+  try {
+    const studentBioData = req.body;
+
+    const tableName = "students";
+
+    const columns = Object.keys(studentBioData).join(", ");
+    const valuesPlaceholders = Object.keys(studentBioData)
+      .map(() => "?")
+      .join(", ");
+
+    const insertQuery = `INSERT INTO ${tableName} (${columns}) VALUES (${valuesPlaceholders})`;
+
+    const values = Object.values(studentBioData);
+
+    console.log(values);
+
+    await db.promise().query(insertQuery, values);
+
+    res.status(201).json({
+      success: true,
+      message: `Student bio-data created successfully`,
+    });
+  } catch (error) {
+    console.error("Error creating student bio-data:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
+exports.getStudent = asyncHandler(async (req, res, next) => {
+  const { adm_no } = req.params;
+
+  let sql;
+  let values;
+  if (adm_no) {
+    sql = "SELECT * FROM students WHERE adm_no = ?";
+    values = [adm_no];
+  } else {
+    return next(new ErrorHandler("Missing parameters", 400));
+  }
+
+  db.query(sql, values, (err, result) => {
+    if (err) {
+      console.error("Error during retrieval:", err);
+      return next(new ErrorHandler("Error during retrieval", 500));
+    }
+
+    if (result.length > 0) {
+      res.status(200).json({ success: true, student: result[0] });
+    } else {
+      return next(new ErrorHandler("Student not found", 404));
+    }
+  });
+});
+
+exports.getStudents = asyncHandler(async (req, res, next) => {
+  let sql = "SELECT * FROM students";
+
+  const { class: studentClass, section } = req.query;
+
+  if (studentClass && section) {
+    sql += ` WHERE class_name = ? AND section = ?`;
+    db.query(sql, [studentClass, section], (err, result) => {
+      if (err) {
+        console.error("Error during retrieval:", err);
+        return next(new ErrorHandler("Error during retrieval", 500));
+      }
+      res.status(200).json({ success: true, students: result });
+    });
+  } else if (studentClass) {
+    sql += ` WHERE class_name = ?`;
+    db.query(sql, [studentClass], (err, result) => {
+      if (err) {
+        console.error("Error during retrieval:", err);
+        return next(new ErrorHandler("Error during retrieval", 500));
+      }
+      res.status(200).json({ success: true, students: result });
+    });
+  } else if (section) {
+    sql += ` WHERE section = ?`;
+    db.query(sql, [section], (err, result) => {
+      if (err) {
+        console.error("Error during retrieval:", err);
+        return next(new ErrorHandler("Error during retrieval", 500));
+      }
+      res.status(200).json({ success: true, students: result });
+    });
+  } else {
+    db.query(sql, (err, result) => {
+      if (err) {
+        console.error("Error during retrieval:", err);
+        return next(new ErrorHandler("Error during retrieval", 500));
+      }
+      res.status(200).json({ success: true, students: result });
+    });
+  }
+});
+
+exports.updateStudent = asyncHandler(async (req, res, next) => {
+  const updatedFields = req.body;
+  const { adm_no } = req.params;
+
+  const updateFieldsString = Object.keys(updatedFields)
+    .map((key) => `${key}="${updatedFields[key]}"`)
+    .join(", ");
+
+  const sql = `UPDATE students SET ${updateFieldsString} WHERE adm_no = '${adm_no}';`;
+
+  db.query(sql, (err, result) => {
+    if (err) {
+      console.error("Error during update:", err);
+      next(new ErrorHandler("Error during update", 500));
+    }
+
+    if (result.affectedRows > 0) {
+      res.status(200).json({ success: true, message: "Update successful" });
+    } else {
+      next(new ErrorHandler("User not found or no changes applied", 404));
+    }
+  });
+});
+
+exports.deleteStudent = asyncHandler(async (req, res, next) => {
+  const { adm_no } = req.params;
+
+  if (!adm_no) {
+    return next(new ErrorHandler("Admission number (adm_no) is required", 400));
+  }
+
+  const sql = `DELETE FROM students WHERE adm_no = ?`;
+
+  db.query(sql, [adm_no], (err, result) => {
+    if (err) {
+      console.error("Error during deletion:", err);
+      return next(new ErrorHandler("Error during deletion", 500));
+    }
+
+    if (result.affectedRows > 0) {
+      res.status(200).json({ success: true, message: "Deletion successful" });
+    } else {
+      return next(
+        new ErrorHandler("Student not found or no changes applied", 404)
+      );
+    }
+  });
+});
