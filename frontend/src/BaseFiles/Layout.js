@@ -11,7 +11,7 @@ export default function Layout( {children }) {
         </div>
         <div className="w-full">
           <NavbarMenu />
-          <div className="p-5 ">
+          <div className="p-5 w-full flex justify-center sm:justify-end">
           {children}
           </div>
         </div>

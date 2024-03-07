@@ -31,8 +31,8 @@ function classNames(...classes) {
 export default function NavbarMenu() {
   return (
     <>
-      <div className="w-full ">
-        <Disclosure as="nav">
+      <div className="w-full flex justify-end ">
+        <Disclosure as="nav" className='max-sm:w-[80%] fixed bg-white z-10'>
           {({ open }) => (
             <>
               <div className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8 shadow-lg">

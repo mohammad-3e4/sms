@@ -7,37 +7,37 @@ const db = require("../config/database");
 dotenv.config({ path: "backend/config/config.env" });
 //  Register new us
 
-// exports.createStudent = async (req, res, next) => {
-//   res.send("ok")
-//   try {
-//     const studentBioData = req.body;
+exports.createClass =  catchAsyncErrors( async (req, res, next) => {
+  res.send("ok")
+  try {
+    const studentBioData = req.body;
 
-//     const tableName = "students";
+    const tableName = "students";
 
-//     const columns = Object.keys(studentBioData).join(", ");
-//     const valuesPlaceholders = Object.keys(studentBioData)
-//       .map(() => "?")
-//       .join(", ");
+    const columns = Object.keys(studentBioData).join(", ");
+    const valuesPlaceholders = Object.keys(studentBioData)
+      .map(() => "?")
+      .join(", ");
 
-//     const insertQuery = `INSERT INTO ${tableName} (${columns}) VALUES (${valuesPlaceholders})`;
+    const insertQuery = `INSERT INTO ${tableName} (${columns}) VALUES (${valuesPlaceholders})`;
 
-//     const values = Object.values(studentBioData);
+    const values = Object.values(studentBioData);
 
-//     console.log(values);
+    console.log(values);
 
-//     await db.promise().query(insertQuery, values);
+    await db.promise().query(insertQuery, values);
 
-//     res.status(201).json({
-//       success: true,
-//       message: `Student bio-data created successfully`,
-//     });
-//   } catch (error) {
-//     console.error("Error creating student bio-data:", error);
-//     res.status(500).json({ success: false, message: "Internal server error" });
-//   }
-// };
+    res.status(201).json({
+      success: true,
+      message: `Student bio-data created successfully`,
+    });
+  } catch (error) {
+    console.error("Error creating student bio-data:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+});
 
-exports.getStudent = asyncHandler(async (req, res, next) => {
+exports.getClass = asyncHandler(async (req, res, next) => {
   const { adm_no } = req.params;
 
   let sql;
@@ -63,7 +63,7 @@ exports.getStudent = asyncHandler(async (req, res, next) => {
   });
 });
 
-exports.getStudents = asyncHandler(async (req, res, next) => {
+exports.getClasses = asyncHandler(async (req, res, next) => {
   let sql = "SELECT * FROM students";
 
   const { class: studentClass, section } = req.query;
@@ -106,7 +106,7 @@ exports.getStudents = asyncHandler(async (req, res, next) => {
   }
 });
 
-exports.updateStudent = asyncHandler(async (req, res, next) => {
+exports.updateClass = asyncHandler(async (req, res, next) => {
   const updatedFields = req.body;
   const { adm_no } = req.params;
 
@@ -130,7 +130,7 @@ exports.updateStudent = asyncHandler(async (req, res, next) => {
   });
 });
 
-exports.deleteStudent = asyncHandler(async (req, res, next) => {
+exports.deleteClass = asyncHandler(async (req, res, next) => {
   const { adm_no } = req.params;
 
   if (!adm_no) {

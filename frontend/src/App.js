@@ -6,7 +6,7 @@ import NotFound from "../src/pages/NotFound";
 import AdminLogin from "../src/pages/AdminLogin";
 import ForgotPassword from "../src/pages/ForgotPassword";
 import ResetPassword from "../src/pages/ResetPassword";
-import AddStudent from '../src/Component/student/AddStudent'
+import AddStudent from "../src/Component/student/AddStudent";
 
 function App() {
   return (
@@ -21,9 +21,14 @@ function App() {
           }
         />
         <Route path="/" element={<AdminLogin />} />
-        <Route path="/add-student" element={  <Layout>
+        <Route
+          path="/add-student"
+          element={
+            <Layout>
               <AddStudent />
-            </Layout>} />
+            </Layout>
+          }
+        />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route path="*" element={<NotFound />} />

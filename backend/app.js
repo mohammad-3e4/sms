@@ -1,7 +1,7 @@
 const experss = require("express");
 const authRoutes = require("./routes/authRoutes");
-const studentRoutes = require("./routes/studentRoutes");
 const staffRoutes = require("./routes/staffRoutes");
+const studentRoutes = require("./routes/studentRoutes");
 const db = require("./config/database");
 const cors = require("cors");
 const multer = require("multer");
@@ -36,7 +36,7 @@ app.post("/api/v1/student/create", async (req, res) => {
 
     const values = Object.values(studentBioData);
 
-    console.log(values);
+  
 
     await db.promise().query(insertQuery, values);
 
