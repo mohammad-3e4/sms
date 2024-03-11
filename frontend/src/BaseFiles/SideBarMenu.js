@@ -7,30 +7,18 @@ import { GiTeacher } from "react-icons/gi";
 import { LiaSchoolSolid } from "react-icons/lia";
 import { BiLibrary } from "react-icons/bi";
 
-const SidebarMenu = () => {
+const SidebarMenu = ({toggleSidebar}) => {
   const [collapsed, setCollapsed] = useState(false);
   const [companyNameVisible, setCompanyNameVisible] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  console.log(collapsed);
   const handleToggleCollapse = () => {
     setCollapsed(!collapsed);
     setCompanyNameVisible(!collapsed);
+    toggleSidebar();
   };
 
   useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth <= 768);
-      if (window.innerWidth <= 768) {
-        setCollapsed(true);
-      } else {
-        setCollapsed(false);
-      }
-    };
 
-    window.addEventListener("resize", handleResize);
-    handleResize();
-
-    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   return (

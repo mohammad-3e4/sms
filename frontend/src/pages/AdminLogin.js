@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-
+import {adminLogin} from '../actions/admin'
 import { Link } from "react-router-dom";
 
 import loginpageimg from "../Static/basic/loginpageimg.jpg";
@@ -25,7 +25,24 @@ const AdminLogin = ({ loginUser }) => {
     initialValues,
     validationSchema: validationSchema,
     onSubmit: async (values) => {
-      
+      try {
+        const response = await fetch('http://localhost:3001/api/v1/auth/signin', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(values),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to submit form data');
+        }
+
+        // Handle successful submission, for example:
+        console.log(await response.json());
+      } catch (error) {
+        console.error('Error submitting form data:', error.message);
+      }
     },
   });
 

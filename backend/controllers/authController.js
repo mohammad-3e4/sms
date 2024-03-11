@@ -11,7 +11,7 @@ dotenv.config({ path: "backend/config/config.env" });
 
 exports.signin = catchAsyncErrors(async (request, response, next) => {
   const { email, password } = request.body;
-
+  console.log(request.body);
   const sql = "SELECT * FROM staff WHERE email=? AND password=?;";
 
   db.query(sql, [email, password], (err, result) => {

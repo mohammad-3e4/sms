@@ -7,6 +7,7 @@ import AdminLogin from "../src/pages/AdminLogin";
 import ForgotPassword from "../src/pages/ForgotPassword";
 import ResetPassword from "../src/pages/ResetPassword";
 import AddStudent from "../src/Component/student/AddStudent";
+import AddStaff from "./Component/staff/AddStaff";
 
 function App() {
   return (
@@ -22,10 +23,18 @@ function App() {
         />
         <Route path="/" element={<AdminLogin />} />
         <Route
-          path="/add-student"
+          path="/student-create"
           element={
             <Layout>
               <AddStudent />
+            </Layout>
+          }
+        />
+        <Route
+          path="/staff-create"
+          element={
+            <Layout>
+              <AddStaff />
             </Layout>
           }
         />

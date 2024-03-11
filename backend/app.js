@@ -8,7 +8,7 @@ const multer = require("multer");
 const dotenv = require("dotenv");
 const bodyParser = require("body-parser");
 dotenv.config({ path: "backend/config/config.env" });
-
+const {isAuthenticatedUser, authorizeRoles} = require('./middlewares/authMiddleware')
 const cookieParser = require("cookie-parser");
 
 const errorMiddleware = require("./middlewares/errorMiddleware");
@@ -21,7 +21,7 @@ app.use(cookieParser());
 app.use(cors("origin", "*"));
 
 // Routes
-app.post("/api/v1/student/create", async (req, res) => {
+app.post("/api/v1/student/create",isAuthenticatedUser,authorizeRoles('admin' ),  async (req, res) => {
   try {
     const studentBioData = req.body;
 
@@ -36,8 +36,6 @@ app.post("/api/v1/student/create", async (req, res) => {
 
     const values = Object.values(studentBioData);
 
-  
-
     await db.promise().query(insertQuery, values);
 
     res.status(201).json({
@@ -49,6 +47,7 @@ app.post("/api/v1/student/create", async (req, res) => {
     res.status(500).json({ success: false, error: error });
   }
 });
+
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     return cb(null, "../../frontend/public");
@@ -59,55 +58,54 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 // login user
-app.post(
-  "/api/v1/staff",
-  upload.single("file"),
-  async (req, res, next) => {
-    try {
-      let imagename = null;
-      if (req.file) {
-        avatar = req.file.originalname;
-      }
-      // Extract other form data
-      const {
-        name,
-        email,
-        password,
-        phone,
-        avatar,
-        role,
-        address,
-        designation,
-        about,
-   
-      } = req.body;
-
-      // Insert data into the database
-      const query =
-        "INSERT INTO staff ( name, email, password, phone, avatar, role, address, designation, about) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-      const values = [
-        name,
-        email,
-        password,
-        phone,
-        avatar,
-        role,
-        address,
-        designation,
-        about,
-      ];
-
-      await db.promise().query(query, values);
-
-      res
-        .status(201)
-        .json({ success: true, message: "Staff created successfully" });
-    } catch (error) {
-      console.error("Error creating teacher:", error);
-      res.status(500).json({ success: false, error: error.message });
+app.post("/api/v1/staff",  upload.single("file"), async (req, res, next) => {
+  try {
+    let avatar = null;
+    if (req.file) {
+      avatar = req.file.originalname; // Assigning file name to avatar
     }
+    // Extract other form data
+    const {
+      staff_name,
+      email,
+      password,
+      phone,
+      gender,
+      religion,
+      address,
+      role,
+      designation,
+      qualification,
+      experience,
+    } = req.body;
+
+    // Insert data into the database
+    const query =
+      "INSERT INTO staff ( staff_name, email, password, phone, avatar, gender, religion, address, role, designation, qualification, experience) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    const values = [
+      staff_name,
+      email,
+      password,
+      phone,
+      avatar, 
+      gender,
+      religion,
+      address,
+      role,
+      designation,
+      qualification,
+      experience,
+    ];
+
+    await db.promise().query(query, values);
+
+    res.status(201).json({ success: true, message: "Staff created successfully" });
+  } catch (error) {
+    console.error( error );
+    res.status(500).json({ success: false, error });
   }
-);
+});
+
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/student", studentRoutes);
 app.use("/api/v1/staff", staffRoutes);

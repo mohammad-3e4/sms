@@ -12,7 +12,9 @@
   padding: 0 15px;
   color: rgb(255, 255, 255);
 }
-
+.css-16jesut >.ps-menu-button:hover {
+  background-color: #3469a1 !important;
+}
 
 .rotate {
   transition: transform 0.5s ease-in-out;
