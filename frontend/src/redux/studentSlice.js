@@ -2,7 +2,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 // Example asynchronous thunk to handle login
-export const loginUser = createAsyncThunk(
+export const addStudent = createAsyncThunk(
   "student/addmission",
   async (values, thunkAPI) => {
     
@@ -37,7 +37,7 @@ const initialState = {
 };
 
 const userSlice = createSlice({
-  name: "user",
+  name: "student",
   initialState,
   reducers: {
     // Define any synchronous actions here if needed
@@ -47,18 +47,18 @@ const userSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(loginUser.pending, (state) => {
+      .addCase(addStudent.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(loginUser.fulfilled, (state, action) => {
+      .addCase(addStudent.fulfilled, (state, action) => {
         state.loading = false;
         state.error = null;
-        state.user = action.payload;
+        state.students = action.payload;
       })
-      .addCase(loginUser.rejected, (state, action) => {
+      .addCase(addStudent.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload.error; // Use error message from rejected action
+        state.error = action.payload.error; 
       });
   },
 });

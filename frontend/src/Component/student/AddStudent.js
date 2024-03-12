@@ -8,13 +8,16 @@ import { useFormik } from "formik";
 import { addStudentValues } from "../InitialValues";
 import { addStudentValidation } from "../validation";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
-import { addStudent } from "../../actions/student";
+import { addStudent } from "../../redux/studentSlice";
+import { useDispatch, useSelector } from "react-redux";
 const AddStudent = () => {
   const [rotate, setRotate] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
   const [error, setError] = useState(null);
   const [showPass, setShowPass] = useState(false);
+
+  const dispacth = useDispatch();
   const handleRefresh = () => {
     setRotate(true);
     setLoading(true);
@@ -34,16 +37,11 @@ const AddStudent = () => {
     initialValues: addStudentValues,
     validationSchema: addStudentValidation,
     onSubmit: async (values, { resetForm }) => {
-      console.log(values)
-       try {
-        const res = await addStudent(values)
-       } catch (error) {
-        
-       }
-
+      console.log(values);
+      dispacth(addStudent(values));
     },
   });
-console.log(formik.errors)
+console.log(formik.errors);
   return (
     <section className="py-1  w-full m-auto">
       <div className="flex flex-wrap justify-between bg-white py-2 mb-1">
@@ -189,13 +187,13 @@ console.log(formik.errors)
                             : ""
                         }`}
                       >
-                        <option value=''>Choose a section</option>
-                        <option value='A'>A</option>
-                        <option value='B'>B</option>
-                        <option value='C'>C</option>
-                        <option value='D'>D</option>
-                        <option value='E'>E</option>
-                        <option value='F'>F</option>
+                        <option value="">Choose a section</option>
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="C">C</option>
+                        <option value="D">D</option>
+                        <option value="E">E</option>
+                        <option value="F">F</option>
                       </select>
                     </div>
                     {formik.touched.section && formik.errors.section && (
@@ -460,12 +458,11 @@ console.log(formik.errors)
                         htmlFor="student_image"
                         className={`border-0 px-3 py-2 placeholder-blueGray-300  focus:bg-white text-gray-600  bg-gray-200 rounded-sm text-sm shadow focus:outline-none  w-full ease-linear transition-all duration-150 `}
                       >
-                              {formik.values.student_image
+                        {formik.values.student_image
                           ? formik.values.student_image.name.slice(0, 23)
                           : "Choose an image"}
                       </label>
                     </div>
-              
                   </div>
                 </div>
 
