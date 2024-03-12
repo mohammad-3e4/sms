@@ -6,8 +6,9 @@ import { PiStudentBold, PiExam } from "react-icons/pi";
 import { GiTeacher } from "react-icons/gi";
 import { LiaSchoolSolid } from "react-icons/lia";
 import { BiLibrary } from "react-icons/bi";
+import { Link } from "react-router-dom";
 
-const SidebarMenu = ({toggleSidebar}) => {
+const SidebarMenu = ({ toggleSidebar }) => {
   const [collapsed, setCollapsed] = useState(false);
   const [companyNameVisible, setCompanyNameVisible] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -17,9 +18,7 @@ const SidebarMenu = ({toggleSidebar}) => {
     toggleSidebar();
   };
 
-  useEffect(() => {
-
-  }, []);
+  useEffect(() => {}, []);
 
   return (
     <div
@@ -57,7 +56,18 @@ const SidebarMenu = ({toggleSidebar}) => {
           )}
         </div>
         {(!isMobile || (isMobile && !collapsed)) && (
-          <Menu className="bg-[#233459] text-gray-100" iconShape="square">
+          <Menu
+            className="bg-[#233459] text-gray-100"
+            iconShape="square"
+            menuItemStyles={{
+              button: {
+                backgroundColor: "#233459",
+                "&:hover": {
+                  backgroundColor: "#3469a1",
+                },
+              },
+            }}
+          >
             <SubMenu
               label="Dashboard"
               icon={<MdOutlineDashboard className="text-yellow-600" />}
@@ -71,9 +81,15 @@ const SidebarMenu = ({toggleSidebar}) => {
               label="Student"
               icon={<PiStudentBold className="text-yellow-600" />}
             >
-              <MenuItem>All Student</MenuItem>
-              <MenuItem>Student Detail</MenuItem>
-              <MenuItem>Admission Form</MenuItem>
+              <MenuItem>
+                <Link to={`/all/students`}>All Student</Link>
+              </MenuItem>
+              <MenuItem>
+                <Link to={`/student/all`}>Student Detail</Link>
+              </MenuItem>
+              <Link to="/student/create">
+                <MenuItem>Admission Form</MenuItem>
+              </Link>
               <MenuItem>Student Promotion</MenuItem>
             </SubMenu>
             <hr />
@@ -84,7 +100,9 @@ const SidebarMenu = ({toggleSidebar}) => {
               <MenuItem>All Teacher</MenuItem>
               <MenuItem>Teacher Detail</MenuItem>
               <MenuItem>Assign Teacher</MenuItem>
-              <MenuItem>Add Teacher</MenuItem>
+              <Link to={`/staff/create`}>
+                <MenuItem>Add Teacher</MenuItem>
+              </Link>
             </SubMenu>
             <hr />
             <SubMenu

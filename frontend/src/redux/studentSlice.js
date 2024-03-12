@@ -3,12 +3,12 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 // Example asynchronous thunk to handle login
 export const loginUser = createAsyncThunk(
-  "user/loginUser",
+  "student/addmission",
   async (values, thunkAPI) => {
     
     try {
       // Your asynchronous logic to authenticate user here
-      const response = await fetch("/auth/signin", {
+      const response = await fetch("/student", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -31,7 +31,7 @@ export const loginUser = createAsyncThunk(
 );
 
 const initialState = {
-  user: null,
+  students: null,
   loading: false,
   error: null,
 };

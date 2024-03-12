@@ -8,13 +8,14 @@ import ForgotPassword from "../src/pages/ForgotPassword";
 import ResetPassword from "../src/pages/ResetPassword";
 import AddStudent from "../src/Component/student/AddStudent";
 import AddStaff from "./Component/staff/AddStaff";
+import AllStudents from "./Component/student/AllStudents";
 
 function App() {
   return (
     <Router>
       <Routes>
         <Route
-          path="/dashboard"
+          path="/admin/dashboard"
           element={
             <Layout>
               <AdminDashboard />
@@ -23,7 +24,7 @@ function App() {
         />
         <Route path="/" element={<AdminLogin />} />
         <Route
-          path="/student-create"
+          path="/student/create"
           element={
             <Layout>
               <AddStudent />
@@ -31,10 +32,18 @@ function App() {
           }
         />
         <Route
-          path="/staff-create"
+          path="/staff/create"
           element={
             <Layout>
               <AddStaff />
+            </Layout>
+          }
+        />
+        <Route
+          path="/all/students"
+          element={
+            <Layout>
+              <AllStudents/>
             </Layout>
           }
         />

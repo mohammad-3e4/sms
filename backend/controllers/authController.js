@@ -7,25 +7,22 @@ const multer = require("multer");
 const db = require("../config/database");
 dotenv.config({ path: "backend/config/config.env" });
 
-
-
 exports.signin = catchAsyncErrors(async (request, response, next) => {
   const { email, password } = request.body;
-  console.log(request.body);
   const sql = "SELECT * FROM staff WHERE email=? AND password=?;";
 
   db.query(sql, [email, password], (err, result) => {
     if (err) {
       console.error("Error during login:", err);
-      next(new ErrorHandler("Error during login !", 500));
+      return next(new ErrorHandler("Error during login !", 500));
     }
 
     if (result.length > 0) {
       const user = result[0];
-
       sendToken(user, 201, response);
     } else {
-      next(new ErrorHandler("Invalid Email & Password !", 401));
+      // If no user found with the provided credentials, respond with a 404 error
+      return response.status(404).json({ message: "User not found with provided credentials" });
     }
   });
 });

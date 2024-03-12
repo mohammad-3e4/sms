@@ -21,7 +21,7 @@ app.use(cookieParser());
 app.use(cors("origin", "*"));
 
 // Routes
-app.post("/api/v1/student/create",isAuthenticatedUser,authorizeRoles('admin' ),  async (req, res) => {
+app.post("/api/v1/student",isAuthenticatedUser,authorizeRoles('admin' ),  async (req, res) => {
   try {
     const studentBioData = req.body;
 
@@ -38,9 +38,13 @@ app.post("/api/v1/student/create",isAuthenticatedUser,authorizeRoles('admin' ), 
 
     await db.promise().query(insertQuery, values);
 
+    const studentsQuery = `SELECT * FROM students`;
+    const [students] = await db.promise().query(studentsQuery);
+
     res.status(201).json({
       success: true,
       message: `Student bio-data created successfully`,
+      students: students 
     });
   } catch (error) {
     console.error("Error creating student bio-data:", error);

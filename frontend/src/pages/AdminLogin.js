@@ -1,17 +1,21 @@
 import React, { useState, useEffect } from "react";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import {adminLogin} from '../actions/admin'
+import ErrorAlert from "../BaseFiles/ErrorAlert";
+import {loginUser, clearErrors} from '../redux/userSlice'
+import {useSelector, useDispatch} from 'react-redux'
 import { Link } from "react-router-dom";
-
+import Spinner from "../BaseFiles/Spinner";
 import loginpageimg from "../Static/basic/loginpageimg.jpg";
 import { useFormik } from "formik";
+
 import * as Yup from "yup";
 
-const AdminLogin = ({ loginUser }) => {
-  const [userError, setUserError] = useState("");
+const AdminLogin = () => {
   const [showPass, setShowPass] = useState(false);
-  const history = useNavigate();
+  const {loading, error , user} = useSelector((state)=>state.user)
+  const dispatch = useDispatch();
+  const navigate = useNavigate()
   const initialValues = {
     email: "",
     password: "",
@@ -25,28 +29,22 @@ const AdminLogin = ({ loginUser }) => {
     initialValues,
     validationSchema: validationSchema,
     onSubmit: async (values) => {
-      try {
-        const response = await fetch('http://localhost:3001/api/v1/auth/signin', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(values),
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to submit form data');
-        }
-
-        // Handle successful submission, for example:
-        console.log(await response.json());
-      } catch (error) {
-        console.error('Error submitting form data:', error.message);
-      }
+      dispatch(loginUser(values))
     },
   });
 
-  useEffect(() => {});
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => {
+        dispatch(clearErrors());
+      }, 2000);
+  
+      return () => clearTimeout(timer); 
+    }
+    if(user.user){
+      navigate('/admin/dashboard')
+    }
+  }, [error, dispatch, navigate, user]);
   return (
     <>
       <div className="relative isolate overflow-hidden bg-white px-6 py-24 sm:py-20 lg:overflow-visible lg:px-0">
@@ -141,13 +139,13 @@ const AdminLogin = ({ loginUser }) => {
                       </p>
                     )}
                   </div>
-                  {/* {userError && <p style={{ color: "red" }}>{userError}</p>} */}
+                  {error && <ErrorAlert error={error}/>}
                   <div>
                     <button
                       type="submit"
-                      className="flex w-full uppercase tracking-widest justify-center rounded bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                      className={`flex w-full uppercase tracking-widest justify-center rounded ${loading ? 'bg-indigo-200' :'bg-indigo-600'} px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600`}
                     >
-                      Sign in
+                     {loading ? <Spinner/> : 'Log In'}
                     </button>
                   </div>
                 </form>
