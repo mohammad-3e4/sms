@@ -85,7 +85,7 @@ const SidebarMenu = ({ toggleSidebar }) => {
                 <Link to={`/all/students`}>All Student</Link>
               </MenuItem>
               <MenuItem>
-                <Link to={`/student/all`}>Student Detail</Link>
+                <Link to={``}>Student Detail</Link>
               </MenuItem>
               <Link to="/student/create">
                 <MenuItem>Admission Form</MenuItem>

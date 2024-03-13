@@ -4,7 +4,7 @@ dotenv.config({ path: "../config/config.env" });
 
 const sendToken = (user, statusCode, res) => {
   const token = jwt.sign(
-    { ID: user.ID, role: user.role },
+    { staff_id: user.staff_id, role: user.role },
     process.env.SECRET_KEY,
     { expiresIn: "24h" }
   );

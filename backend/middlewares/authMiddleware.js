@@ -2,44 +2,45 @@ const jwt = require("jsonwebtoken");
 const ErrorHandler = require("../utils/errorHandler");
 const catchAsyncErrors = require("./cathAsyncErrorsMiddleware");
 const asyncHandler = require("express-async-handler");
-const db = require('../config/database')
+const db = require("../config/database");
 const dotenv = require("dotenv");
 dotenv.config({ path: "backend/config/config.env" });
 
-
-exports.isAuthenticatedUser = catchAsyncErrors(async (request, response, next) => {
-  try {
-    const { token } = request.cookies;
-    if (!token) {
-      throw new ErrorHandler("Login first to access this resource!");
-    }
-
-    let decode;
+exports.isAuthenticatedUser = catchAsyncErrors(
+  async (request, response, next) => {
     try {
-      decode = jwt.verify(token, process.env.SECRET_KEY);
+      const { token } = request.cookies;
+
+      if (!token) {
+        throw new ErrorHandler("Login first to access this resource!");
+      }
+
+      let decode;
+      try {
+        decode = jwt.verify(token, process.env.SECRET_KEY);
+      } catch (error) {
+        throw new ErrorHandler("Invalid token. Please log in again.");
+      }
+      const sql = "SELECT * FROM staff WHERE staff_id = ?";
+      db.query(sql, [decode.staff_id], (err, results) => {
+        if (err) {
+          console.log(err);
+          throw new ErrorHandler("Error finding user in database");
+        }
+
+        if (!results || results.length === 0) {
+          throw new ErrorHandler("User not found");
+        }
+
+        request.user = results[0];
+        console.log("request user", results[0]);
+        next();
+      });
     } catch (error) {
-      throw new ErrorHandler("Invalid token. Please log in again.");
+      next(error);
     }
-    const sql = 'SELECT * FROM staff WHERE ID = ?';
-    db.query(sql, [decode.ID], (err, results) => {
-      if (err) {
-        console.log(err);
-        throw new ErrorHandler("Error finding user in database");
-      }
-
-      if (!results || results.length === 0) {
-        throw new ErrorHandler("User not found");
-      }
-
-      request.user = results[0]; 
-      console.log("request user",results[0]);
-      next();
-    });
-  } catch (error) {
-    next(error);
   }
-});
-
+);
 
 exports.authorizeRoles = function (...roles) {
   return (req, res, next) => {
@@ -55,7 +56,6 @@ exports.authorizeRoles = function (...roles) {
   };
 };
 exports.protect = asyncHandler(async (req, res, next) => {
-  
   let token;
   if (
     req.headers.authorization &&
@@ -75,5 +75,4 @@ exports.protect = asyncHandler(async (req, res, next) => {
     res.status(401);
     throw new Error("Not Authorized, not token");
   }
-
 });

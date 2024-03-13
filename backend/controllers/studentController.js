@@ -131,15 +131,15 @@ exports.updateStudent = asyncHandler(async (req, res, next) => {
 });
 
 exports.deleteStudent = asyncHandler(async (req, res, next) => {
-  const { adm_no } = req.params;
-
-  if (!adm_no) {
-    return next(new ErrorHandler("Admission number (adm_no) is required", 400));
+  const { id } = req.params;
+ console.log(id);
+  if (!id) {
+    return next(new ErrorHandler("Admission number (id) is required", 400));
   }
 
-  const sql = `DELETE FROM students WHERE adm_no = ?`;
+  const sql = `DELETE FROM students WHERE student_id = ?`;
 
-  db.query(sql, [adm_no], (err, result) => {
+  db.query(sql, [id], (err, result) => {
     if (err) {
       console.error("Error during deletion:", err);
       return next(new ErrorHandler("Error during deletion", 500));

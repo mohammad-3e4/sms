@@ -15,7 +15,7 @@ export default function Layout({ children }) {
       <div className="flex h-full overflow-hidden">
         <aside
           className={`${
-            sidebarCollapsed ? "w-16" : "w-60"
+            sidebarCollapsed ? "w-20" : "w-60"
           } transition-all duration-300 ease-in-out overflow-y-auto`}
           style={{ height: "calc(100vh - 60px)" }}
         >

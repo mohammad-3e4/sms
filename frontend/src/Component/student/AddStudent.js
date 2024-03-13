@@ -3,45 +3,52 @@ import Loader from "../../BaseFiles/Loader";
 import { FaAngleDown, FaArrowsRotate, FaXmark } from "react-icons/fa6";
 import ErrorAlert from "../../BaseFiles/ErrorAlert";
 import SuccessAlert from "../../BaseFiles/SuccessAlert";
-import { useState } from "react";
+import { useState , useEffect} from "react";
 import { useFormik } from "formik";
 import { addStudentValues } from "../InitialValues";
 import { addStudentValidation } from "../validation";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
-import { addStudent } from "../../redux/studentSlice";
+import { addStudent,clearErrors, clearMessage } from "../../redux/studentSlice";
 import { useDispatch, useSelector } from "react-redux";
 const AddStudent = () => {
+  const {loading, error, message} = useSelector((state)=>state.student) 
   const [rotate, setRotate] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState(null);
-  const [error, setError] = useState(null);
+
   const [showPass, setShowPass] = useState(false);
 
   const dispacth = useDispatch();
   const handleRefresh = () => {
     setRotate(true);
-    setLoading(true);
     setTimeout(() => {
       setRotate(false);
-      setLoading(false);
     }, 1000);
   };
 
-  const checkAlert = () => {
-    setError("Internal server error");
-    setTimeout(() => {
-      setError(null);
-    }, 2000);
-  };
+
+
   const formik = useFormik({
     initialValues: addStudentValues,
     validationSchema: addStudentValidation,
-    onSubmit: async (values, { resetForm }) => {
+    onSubmit: async (values) => {
       console.log(values);
       dispacth(addStudent(values));
     },
   });
-console.log(formik.errors);
+  useEffect(()=>{
+    if(error){
+      setTimeout(() => {
+        dispacth(clearErrors());
+      }, 3000);
+    }
+    if(message){
+      formik.resetForm()
+      setTimeout(() => {
+        dispacth(clearMessage());
+      }, 3000);
+    }
+
+  },[error, message, loading, formik])
+
   return (
     <section className="py-1  w-full m-auto">
       <div className="flex flex-wrap justify-between bg-white py-2 mb-1">
@@ -51,7 +58,7 @@ console.log(formik.errors);
         <div className="w-1/2 flex gap-5 justify-end px-4 items-center">
           <FaAngleDown
             className="text-yellow-700 cursor-pointer"
-            onClick={checkAlert}
+    
           />
           <FaArrowsRotate
             className={`text-green-700 cursor-pointer ${

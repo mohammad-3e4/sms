@@ -41,7 +41,9 @@ const AdminLogin = () => {
   
       return () => clearTimeout(timer); 
     }
-    if(user.user){
+    if(user?.user == null){
+      navigate('/')
+    }else{
       navigate('/admin/dashboard')
     }
   }, [error, dispatch, navigate, user]);

@@ -18,7 +18,7 @@ router.get(
   getStudents
 );
 router
-  .route("/:adm_no")
+  .route("/:id")
   .get(isAuthenticatedUser, authorizeRoles("teacher", "admin"), getStudent)
   .delete(isAuthenticatedUser, authorizeRoles("admin"), deleteStudent)
   .post(isAuthenticatedUser, authorizeRoles("admin"), updateStudent);
