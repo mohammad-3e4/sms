@@ -10,7 +10,7 @@ const {
   deleteMember,
   updateMember,
 } = require("../controllers/staffController");
-router.get("/", getStaff);
+router.get("/", isAuthenticatedUser,authorizeRoles('admin'), getStaff);
 router
   .route("/:id")
   .get(getMember)

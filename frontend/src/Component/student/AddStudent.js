@@ -16,7 +16,7 @@ const AddStudent = () => {
 
   const [showPass, setShowPass] = useState(false);
 
-  const dispacth = useDispatch();
+  const dispatch = useDispatch();
   const handleRefresh = () => {
     setRotate(true);
     setTimeout(() => {
@@ -31,19 +31,19 @@ const AddStudent = () => {
     validationSchema: addStudentValidation,
     onSubmit: async (values) => {
       console.log(values);
-      dispacth(addStudent(values));
+      dispatch(addStudent(values));
     },
   });
   useEffect(()=>{
     if(error){
       setTimeout(() => {
-        dispacth(clearErrors());
+        dispatch(clearErrors());
       }, 3000);
     }
     if(message){
       formik.resetForm()
       setTimeout(() => {
-        dispacth(clearMessage());
+        dispatch(clearMessage());
       }, 3000);
     }
 

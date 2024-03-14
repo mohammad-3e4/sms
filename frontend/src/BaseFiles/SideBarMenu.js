@@ -81,9 +81,9 @@ const SidebarMenu = ({ toggleSidebar }) => {
               label="Student"
               icon={<PiStudentBold className="text-yellow-600" />}
             >
-              <MenuItem>
-                <Link to={`/all/students`}>All Student</Link>
-              </MenuItem>
+              <Link to={`/all/students`}>
+                <MenuItem>All Student</MenuItem>
+              </Link>
               <MenuItem>
                 <Link to={``}>Student Detail</Link>
               </MenuItem>
@@ -97,7 +97,9 @@ const SidebarMenu = ({ toggleSidebar }) => {
               label="Teacher"
               icon={<GiTeacher className="text-yellow-600" />}
             >
-              <MenuItem>All Teacher</MenuItem>
+              <Link to={`/all/staff`}>
+                <MenuItem>All Teachers</MenuItem>
+              </Link>
               <MenuItem>Teacher Detail</MenuItem>
               <MenuItem>Assign Teacher</MenuItem>
               <Link to={`/staff/create`}>

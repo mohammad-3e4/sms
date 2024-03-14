@@ -3,54 +3,49 @@ import Loader from "../../BaseFiles/Loader";
 import { FaAngleDown, FaArrowsRotate, FaXmark } from "react-icons/fa6";
 import ErrorAlert from "../../BaseFiles/ErrorAlert";
 import SuccessAlert from "../../BaseFiles/SuccessAlert";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useFormik } from "formik";
 import { addStaffValues } from "../InitialValues";
 import { addStaffValidation } from "../validation";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
-import { addStaff } from "../../actions/staff";
+import { useDispatch, useSelector } from "react-redux";
+import { addStaff, clearErrors, clearMessage} from "../../redux/staffSlice";
 const AddStaff = () => {
+  const dispatch = useDispatch();
   const [rotate, setRotate] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState(null);
-  const [error, setError] = useState(null);
+  const {loading, error, message} = useSelector((state)=>state.staff)
+  
   const [showPass, setShowPass] = useState(false);
   const handleRefresh = () => {
     setRotate(true);
-    setLoading(true);
     setTimeout(() => {
       setRotate(false);
-      setLoading(false);
     }, 1000);
   };
 
-  const checkAlert = () => {
-    setError("Internal server error");
-    setTimeout(() => {
-      setError(null);
-    }, 2000);
-  };
+
   const formik = useFormik({
     initialValues: addStaffValues,
     validationSchema: addStaffValidation,
-    onSubmit: async (values, { resetForm }) => {
-      const result = await addStaff(values);
-      if (result.error) {
-        setError(result.error);
-        setTimeout(() => {
-          setError(null);
-        }, 5000);
-      } else {
-        console.log(result);
-        setMessage(result.data.message);
-        setTimeout(() => {
-          setMessage(null);
-        }, 5000);
-        resetForm();
-      }
+    onSubmit: async (values) => {
+      console.log(values);
+      dispatch(addStaff(values));
     },
   });
+  useEffect(()=>{
+    if(error){
+      setTimeout(() => {
+        dispatch(clearErrors());
+      }, 3000);
+    }
+    if(message){
+      formik.resetForm()
+      setTimeout(() => {
+        dispatch(clearMessage());
+      }, 3000);
+    }
 
+  },[error, message, loading, formik])
   return (
     <section className="py-1  w-full m-auto">
       <div className="flex flex-wrap justify-between bg-white py-2 mb-1">
@@ -60,7 +55,7 @@ const AddStaff = () => {
         <div className="w-1/2 flex gap-5 justify-end px-4 items-center">
           <FaAngleDown
             className="text-yellow-700 cursor-pointer"
-            onClick={checkAlert}
+
           />
           <FaArrowsRotate
             className={`text-green-700 cursor-pointer ${

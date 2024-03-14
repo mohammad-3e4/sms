@@ -58,7 +58,7 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 // login user
-app.post("/api/v1/staff",  upload.single("file"), async (req, res, next) => {
+app.post("/api/v1/staff",isAuthenticatedUser, authorizeRoles('admin'),  upload.single("file"), async (req, res, next) => {
   try {
     let avatar = null;
     if (req.file) {
@@ -78,10 +78,10 @@ app.post("/api/v1/staff",  upload.single("file"), async (req, res, next) => {
       qualification,
       experience,
     } = req.body;
-
+    const joining_date = new Date().toLocaleString();
     // Insert data into the database
     const query =
-      "INSERT INTO staff ( staff_name, email, password, phone, avatar, gender, religion, address, role, designation, qualification, experience) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+      "INSERT INTO staff ( staff_name, email, password, phone, avatar, gender, religion, address, role, designation, qualification, experience, joining_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     const values = [
       staff_name,
       email,
@@ -95,6 +95,7 @@ app.post("/api/v1/staff",  upload.single("file"), async (req, res, next) => {
       designation,
       qualification,
       experience,
+      joining_date
     ];
 
     await db.promise().query(query, values);

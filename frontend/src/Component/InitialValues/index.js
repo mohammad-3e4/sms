@@ -44,4 +44,5 @@ export const addStaffValues = {
   bacnk_account_number: "",
   ifsc_code: "",
   pan_card_no: "",
+  joining_date: "",
 };

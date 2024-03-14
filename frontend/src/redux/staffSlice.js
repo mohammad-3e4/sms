@@ -1,12 +1,12 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 // Example asynchronous thunk to handle login
-export const addStudent = createAsyncThunk(
-  "student/addmission",
+export const addStaff = createAsyncThunk(
+  "staff/add",
   async (values, thunkAPI) => {
     try {
       // Your asynchronous logic to add student here
-      const response = await fetch("/student", {
+      const response = await fetch("/staff", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -29,11 +29,11 @@ export const addStudent = createAsyncThunk(
 );
 
 // Example asynchronous thunk to get students
-export const getStudents = createAsyncThunk(
-  "student/getStudents",
+export const getStaff = createAsyncThunk(
+  "staff/getStaff",
   async (_, thunkAPI) => {
     try {
-      const response = await fetch("/student");
+      const response = await fetch("/staff");
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -41,7 +41,6 @@ export const getStudents = createAsyncThunk(
       }
 
       const data = await response.json();
-
       return data;
     } catch (error) {
       // Handle error
@@ -51,12 +50,12 @@ export const getStudents = createAsyncThunk(
 );
 
 // Example asynchronous thunk to delete student
-export const deleteStudent = createAsyncThunk(
-  "student/deleteStudent",
-  async (studentId, thunkAPI) => {
+export const deleteStaff = createAsyncThunk(
+  "staff/deleteStaff",
+  async (staffId, thunkAPI) => {
     try {
       // Your asynchronous logic to delete student here
-      const response = await fetch(`/student/${studentId}`, {
+      const response = await fetch(`/staff/${staffId}`, {
         method: "DELETE",
       });
 
@@ -64,8 +63,9 @@ export const deleteStudent = createAsyncThunk(
         const errorData = await response.json();
         throw new Error(errorData.message);
       }
-
-      return studentId;
+      const data = await response.json();
+      console.log(data);
+      return { staffId: staffId, message: data.message };
     } catch (error) {
       // Handle error
       return thunkAPI.rejectWithValue({ error: error.message });
@@ -74,13 +74,13 @@ export const deleteStudent = createAsyncThunk(
 );
 
 // Example asynchronous thunk to update student
-export const updateStudent = createAsyncThunk(
-  "student/updateStudent",
-  async ({ studentId, updatedData }, thunkAPI) => {
+export const updateStaff = createAsyncThunk(
+  "student/updateStaff",
+  async ({ staffId, updatedData }, thunkAPI) => {
+
     try {
       // Your asynchronous logic to update student here
-
-      const response = await fetch(`/student/${studentId}`, {
+      const response = await fetch(`/staff/${staffId}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -94,6 +94,7 @@ export const updateStudent = createAsyncThunk(
       }
 
       const data = await response.json();
+    
       return data;
     } catch (error) {
       // Handle error
@@ -103,14 +104,14 @@ export const updateStudent = createAsyncThunk(
 );
 
 const initialState = {
-  students: null,
+  staff: null,
   loading: false,
   error: null,
   message: null,
 };
 
-const userSlice = createSlice({
-  name: "student",
+const staffSlice = createSlice({
+  name: "staff",
   initialState,
   reducers: {
     // Define any synchronous actions here if needed
@@ -123,72 +124,66 @@ const userSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(addStudent.pending, (state) => {
+      .addCase(addStaff.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(addStudent.fulfilled, (state, action) => {
+      .addCase(addStaff.fulfilled, (state, action) => {
         state.loading = false;
         state.error = null;
         state.message = action.payload.message;
       })
-      .addCase(addStudent.rejected, (state, action) => {
+      .addCase(addStaff.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload.error;
       })
-      .addCase(getStudents.pending, (state) => {
+      .addCase(getStaff.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(getStudents.fulfilled, (state, action) => {
+      .addCase(getStaff.fulfilled, (state, action) => {
         state.loading = false;
         state.error = null;
-        state.students = action.payload.students;
+        state.staff = action.payload.staff;
       })
-      .addCase(getStudents.rejected, (state, action) => {
+      .addCase(getStaff.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload.error;
       })
-      .addCase(deleteStudent.pending, (state) => {
+      .addCase(deleteStaff.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(deleteStudent.fulfilled, (state, action) => {
+      .addCase(deleteStaff.fulfilled, (state, action) => {
         state.loading = false;
         state.error = null;
-        state.message = action.payload;
+        state.message = action.payload.message;
         // Remove deleted student from the state
-        state.students = state.students.filter(
-          (student) => student.id !== action.payload
+        state.staff = state.staff.filter(
+          (staf) => staf.staff_id !== action.payload.staffId
         );
       })
-      .addCase(deleteStudent.rejected, (state, action) => {
+      .addCase(deleteStaff.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload.error;
       })
-      .addCase(updateStudent.pending, (state) => {
+      .addCase(updateStaff.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(updateStudent.fulfilled, (state, action) => {
+      .addCase(updateStaff.fulfilled, (state, action) => {
         state.loading = false;
         state.error = null;
         state.message = action.payload.message;
-        // Update the student data in the state
-        // state.students = state.students.map((student) => {
-        //   if (student.id === action.payload.id) {
-        //     return action.payload;
-        //   }
-        //   return student;
-        // });
+
       })
-      .addCase(updateStudent.rejected, (state, action) => {
+      .addCase(updateStaff.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload.error;
       });
   },
 });
 
-export const { clearErrors, clearMessage } = userSlice.actions;
+export const { clearErrors, clearMessage } = staffSlice.actions;
 
-export default userSlice.reducer;
+export default staffSlice.reducer;

@@ -6,10 +6,12 @@ import storage from "redux-persist/lib/storage";
 
 import userReducer from "./userSlice";
 import studentReducer from './studentSlice'
+import staffReducer from './staffSlice'
 
 const rootReducer = combineReducers({
   user: userReducer, 
-  student: studentReducer
+  student: studentReducer,
+  staff:staffReducer
 });
 
 const persistConfig = {

@@ -40,7 +40,7 @@ exports.getStaff = asyncHandler(async (req, res, next) => {
   const { role, name } = req.query;
 
   if (role && name) {
-    sql += ` WHERE role = ? AND name = ?`;
+    sql += ` WHERE role = ? AND staff_name = ?`;
     db.query(sql, [role, name], (err, result) => {
       if (err) {
         console.error("Error during retrieval:", err);
@@ -58,7 +58,7 @@ exports.getStaff = asyncHandler(async (req, res, next) => {
       res.status(200).json({ success: true, staff: result });
     });
   } else if (name) {
-    sql += ` WHERE name = ?`;
+    sql += ` WHERE staff_name = ?`;
     db.query(sql, [name], (err, result) => {
       if (err) {
         console.error("Error during retrieval:", err);
@@ -72,7 +72,7 @@ exports.getStaff = asyncHandler(async (req, res, next) => {
         console.error("Error during retrieval:", err);
         return next(new ErrorHandler("Error during retrieval", 500));
       }
-      res.status(200).json({ success: true, students: result });
+      res.status(200).json({ success: true, staff: result });
     });
   }
 });
@@ -80,12 +80,12 @@ exports.getStaff = asyncHandler(async (req, res, next) => {
 exports.updateMember = asyncHandler(async (req, res, next) => {
   const updatedFields = req.body;
   const { id } = req.params;
-
+  console.log(req.body);
   const updateFieldsString = Object.keys(updatedFields)
     .map((key) => `${key}="${updatedFields[key]}"`)
     .join(", ");
 
-  const sql = `UPDATE staff SET ${updateFieldsString} WHERE ID = '${id}';`;
+  const sql = `UPDATE staff SET ${updateFieldsString} WHERE staff_id = '${Number(id)}';`;
 
   db.query(sql, (err, result) => {
     if (err) {
@@ -108,7 +108,7 @@ exports.deleteMember = asyncHandler(async (req, res, next) => {
     return next(new ErrorHandler("Admission number (ID) is required", 400));
   }
 
-  const sql = `DELETE FROM staff WHERE ID = ?`;
+  const sql = `DELETE FROM staff WHERE staff_id = ?`;
 
   db.query(sql, [id], (err, result) => {
     if (err) {

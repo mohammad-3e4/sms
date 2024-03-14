@@ -5,15 +5,15 @@ import ErrorAlert from "../../BaseFiles/ErrorAlert";
 import SuccessAlert from "../../BaseFiles/SuccessAlert";
 import { useEffect, useState } from "react";
 import { useFormik } from "formik";
-import { addStudentValues } from "../InitialValues";
+import { addStaffValues } from "../InitialValues";
 import {Link} from 'react-router-dom'
 import {
   clearErrors,
   clearMessage,
-  deleteStudent,
-  getStudents,
-  updateStudent,
-} from "../../redux/studentSlice";
+  deleteStaff,
+  getStaff,
+  updateStaff,
+} from "../../redux/staffSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { BsPencilSquare } from "react-icons/bs";
 import { FaRegTrashAlt, FaCheck } from "react-icons/fa";
@@ -21,16 +21,16 @@ import { FaRegTrashAlt, FaCheck } from "react-icons/fa";
 const AllStaff = () => {
   const currentUrl = window.location.href;
   const [editMode, setEditMode] = useState(false);
-  const [editableStudent, setEditableStudent] = useState(null);
-  const { loading, error, message, students } = useSelector(
-    (state) => state.student
+  const [editableMember, setEditableMember] = useState(null);
+  const { loading, error, message, staff } = useSelector(
+    (state) => state.staff
   );
   const { user } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const [rotate, setRotate] = useState(false);
 
   useEffect(() => {
-    dispatch(getStudents());
+    dispatch(getStaff());
     if (error) {
       const errorInterval = setInterval(() => {
         dispatch(clearErrors());
@@ -46,44 +46,44 @@ const AllStaff = () => {
   }, [dispatch, error, message]);
 
   const thds = [
-    "Roll No",
+    "ID",
     "Photo",
     "Name",
     "Gender",
-    "Parents Name",
-    "Class",
-    "Section",
+    "Designation",
+    "Joined Date",
     "Address",
-    "Date of Birth",
     "Mobile",
     "E-mail",
+    "Experience",
   ];
 
-  const handleEdit = (student) => {
-    setEditableStudent(student);
+  const handleEdit = (member) => {
+    setEditableMember(member);
     setEditMode(true);
   };
 
   const handleCancelEdit = () => {
     setEditMode(false);
-    setEditableStudent(null);
+    setEditableMember(null);
   };
 
   const formik = useFormik({
-    initialValues: addStudentValues,
-    onSubmit:(values)=>{
+    initialValues: addStaffValues,
+    onSubmit: (values) => {
       const filteredData = Object.fromEntries(
-        Object.entries(values).filter(([key, value]) => value !== "" && value !== null)
+        Object.entries(values).filter(
+          ([key, value]) => value !== "" && value !== null
+        )
       );
-      if(filteredData.length > 0) {
-        dispatch(updateStudent({studentId:editableStudent.student_id, updatedData:filteredData}));
-        
-      }else{
-        return alert("No Changes found! ")
-      }
-    }
+      dispatch(
+        updateStaff({
+          staffId: editableMember.staff_id,
+          updatedData: filteredData,
+        })
+      );
+    },
   });
-
 
   return (
     <section className="py-1  w-full m-auto">
@@ -135,24 +135,27 @@ const AllStaff = () => {
               </tr>
             </thead>
             <tbody>
-              {students?.length == 0 ? (
+              {staff?.filter((staf) => staf.staff_id !== user.staff_id)
+                .length == 0 ? (
                 <div className="text-center py-5">No data found</div>
               ) : (
-                students?.map((student) => (
+                staff
+                  ?.filter((staf) => staf.staff_id !== user.staff_id)
+                  .map((member) => (
                     <tr
                       className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
-                      key={student.email}
+                      key={member.email}
                     >
                       <th
                         scope="row"
                         className="px-6 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                       >
-                        {student.student_id}
+                        {member.staff_id}
                       </th>
                       <td className="px-2 py-2 w-10">
                         <img
                           src={
-                            student.gender === "Male"
+                            member.gender === "Male"
                               ? "/default_male.png"
                               : "/default_female.png"
                           }
@@ -160,179 +163,161 @@ const AllStaff = () => {
                       </td>
                       <td className="px-2 py-2">
                         {editMode &&
-                        editableStudent &&
-                        editableStudent.student_id === student.student_id ? (
+                        editableMember &&
+                        editableMember.staff_id === member.staff_id ? (
                           <input
-                            id="student_name"
+                            id="staff_name"
                             className="border-0 px-3 py-1 placeholder-blueGray-300  focus:bg-white text-gray-600  bg-gray-200 rounded-sm text-sm shadow focus:outline-none  w-full ease-linear transition-all duration-150"
                             type="text"
                             onChange={formik.handleChange}
-                            defaultValue={student.student_name}
+                            defaultValue={member.staff_name}
                           />
                         ) : (
-                          <Link to={`/student/details/${student.student_id}`}>
-                          {student.student_name}
-                          </Link>
+                          <Link to={`/staff/${member.staff_id}`} >{member.staff_name}</Link>
                         )}
                       </td>
                       <td className="px-2 py-2">
                         {editMode &&
-                        editableStudent &&
-                        editableStudent.student_id === student.student_id ? (
+                        editableMember &&
+                        editableMember.staff_id === member.staff_id ? (
                           <input
                             id="gender"
                             className="border-0 px-3 py-1 placeholder-blueGray-300  focus:bg-white text-gray-600  bg-gray-200 rounded-sm text-sm shadow focus:outline-none  w-full ease-linear transition-all duration-150"
                             type="text"
                             onChange={formik.handleChange}
-                            defaultValue={student.gender}
+                            defaultValue={member.gender}
                           />
                         ) : (
-                          student.gender
+                          member.gender
                         )}
                       </td>
                       <td className="px-2 py-2">
                         {editMode &&
-                        editableStudent &&
-                        editableStudent.student_id === student.student_id ? (
+                        editableMember &&
+                        editableMember.staff_id === member.staff_id ? (
                           <input
-                            id="father_name"
+                            id="designation"
                             className="border-0 px-3 py-1 placeholder-blueGray-300  focus:bg-white text-gray-600  bg-gray-200 rounded-sm text-sm shadow focus:outline-none  w-full ease-linear transition-all duration-150"
                             type="text"
                             onChange={formik.handleChange}
-                            defaultValue={student.father_name}
+                            defaultValue={member.designation}
                           />
                         ) : (
-                          student.father_name
+                          member.designation
                         )}
                       </td>
                       <td className="px-2 py-2">
                         {editMode &&
-                        editableStudent &&
-                        editableStudent.student_id === student.student_id ? (
+                        editableMember &&
+                        editableMember.staff_id === member.staff_id ? (
                           <input
-                            id="class_name"
+                            id="joining_date"
                             className="border-0 px-3 py-1 placeholder-blueGray-300  focus:bg-white text-gray-600  bg-gray-200 rounded-sm text-sm shadow focus:outline-none  w-full ease-linear transition-all duration-150"
                             type="text"
-                            onChange={formik.handleChange}
-                            defaultValue={student.class_name}
-                          />
-                        ) : (
-                          student.class_name
-                        )}
-                      </td>
-                      <td className="px-2 py-2">
-                        {editMode &&
-                        editableStudent &&
-                        editableStudent.student_id === student.student_id ? (
-                          <input
-                            id="section"
-                            className="border-0 px-3 py-1 placeholder-blueGray-300  focus:bg-white text-gray-600  bg-gray-200 rounded-sm text-sm shadow focus:outline-none  w-full ease-linear transition-all duration-150"
-                            type="text"
-                            onChange={formik.handleChange}
-                            defaultValue={student.section}
-                          />
-                        ) : (
-                          student.section
-                        )}
-                      </td>
-                      <td className="px-2 py-2">
-                        {editMode &&
-                        editableStudent &&
-                        editableStudent.student_id === student.student_id ? (
-                          <input
-                            id="address"
-                            className="border-0 px-3 py-1 placeholder-blueGray-300  focus:bg-white text-gray-600  bg-gray-200 rounded-sm text-sm shadow focus:outline-none  w-full ease-linear transition-all duration-150"
-                            type="text"
-                            onChange={formik.handleChange}
-                            defaultValue={student.address.substring(0, 10)}
-                          />
-                        ) : (
-                          student.address.substring(0, 10)
-                        )}
-                      </td>
-                      <td className="px-2 py-2">
-                        {editMode &&
-                        editableStudent &&
-                        editableStudent.student_id === student.student_id ? (
-                          <input
-                            className="border-0 px-3 py-1 placeholder-blueGray-300  focus:bg-white text-gray-600  bg-gray-200 rounded-sm text-sm shadow focus:outline-none  w-full ease-linear transition-all duration-150"
-                            type="text"
-                            id="date_of_birth"
                             onChange={formik.handleChange}
                             defaultValue={new Date(
-                              student.date_of_birth
-                            ).toLocaleDateString("en-US")}
+                              member.joining_date
+                            ).toLocaleDateString()}
                           />
                         ) : (
                           <>
-                          {" "}
-                          {new Date(student.date_of_birth).toLocaleDateString(
-                            "en-US"
-                          )}
+                            {new Date(member.joining_date).toLocaleDateString()}
                           </>
                         )}
                       </td>
                       <td className="px-2 py-2">
                         {editMode &&
-                        editableStudent &&
-                        editableStudent.student_id === student.student_id ? (
+                        editableMember &&
+                        editableMember.staff_id === member.staff_id ? (
+                          <input
+                            id="address"
+                            className="border-0 px-3 py-1 placeholder-blueGray-300  focus:bg-white text-gray-600  bg-gray-200 rounded-sm text-sm shadow focus:outline-none  w-full ease-linear transition-all duration-150"
+                            type="text"
+                            onChange={formik.handleChange}
+                            defaultValue={member.address.substring(0, 10)}
+                          />
+                        ) : (
+                          member.address.substring(0, 10)
+                        )}
+                      </td>
+                      <td className="px-2 py-2">
+                        {editMode &&
+                        editableMember &&
+                        editableMember.staff_id === member.staff_id ? (
                           <input
                             className="border-0 px-3 py-1 placeholder-blueGray-300  focus:bg-white text-gray-600  bg-gray-200 rounded-sm text-sm shadow focus:outline-none  w-full ease-linear transition-all duration-150"
                             type="text"
                             id="phone"
                             onChange={formik.handleChange}
-                            defaultValue={student.phone}
+                            defaultValue={member.phone}
                           />
                         ) : (
-                          student.phone
+                          member.phone
                         )}
                       </td>
                       <td className="px-2 py-2">
                         {editMode &&
-                        editableStudent &&
-                        editableStudent.student_id === student.student_id ? (
+                        editableMember &&
+                        editableMember.staff_id === member.staff_id ? (
                           <input
                             className="border-0 px-3 py-1 placeholder-blueGray-300  focus:bg-white text-gray-600  bg-gray-200 rounded-sm text-sm shadow focus:outline-none  w-full ease-linear transition-all duration-150"
                             type="email"
                             id="email"
-                            defaultValue={student.email}
+                            defaultValue={member.email}
                             onChange={formik.handleChange}
                           />
                         ) : (
-                          student.email
+                          member.email
                         )}
                       </td>
-                    
+                      <td className="px-2 py-2">
+                        {editMode &&
+                        editableMember &&
+                        editableMember.staff_id === member.staff_id ? (
+                          <input
+                            className="border-0 px-3 py-1 placeholder-blueGray-300  focus:bg-white text-gray-600  bg-gray-200 rounded-sm text-sm shadow focus:outline-none  w-full ease-linear transition-all duration-150"
+                            type="text"
+                            id="experience"
+                            defaultValue={member.experience}
+                            onChange={formik.handleChange}
+                          />
+                        ) : (
+                          member.experience
+                        )}
+                      </td>
                       <td className="px-2 py-4 flex gap-3 items-center ">
                         {editMode &&
-                        editableStudent &&
-                        editableStudent.student_id === student.student_id ? (
+                        editableMember &&
+                        editableMember.staff_id === member.staff_id ? (
                           <FaXmark
                             className="h-4 w-4 text-red-700 cursor-pointer"
                             onClick={handleCancelEdit}
                             title="cancel"
                           />
                         ) : (
-                          <FaEye className="h-4 w-4 cursor-pointer" title="details" />
+                          <FaEye
+                            className="h-4 w-4 cursor-pointer"
+                            title="details"
+                          />
                         )}
                         {editMode &&
-                        editableStudent &&
-                        editableStudent.student_id === student.student_id ? (
+                        editableMember &&
+                        editableMember.staff_id === member.staff_id ? (
                           <FaCheck
                             className="h-4 w-4 text-green-700 cursor-pointer"
                             onClick={formik.handleSubmit}
-                          title="Submit Changes"
+                            title="Submit Changes"
                           />
                         ) : (
                           <BsPencilSquare
                             className="h-4 w-4 text-green-700 cursor-pointer"
-                            onClick={() => handleEdit(student)}
+                            onClick={() => handleEdit(member)}
                             title="Edit"
                           />
                         )}
                         <FaRegTrashAlt
                           className="h-4 w-4 text-red-700 cursor-pointer"
-                          onClick={() => dispatch(deleteStudent(student.student_id))}
+                          onClick={() => dispatch(deleteStaff(member.staff_id))}
                           title="Delete"
                         />
                       </td>

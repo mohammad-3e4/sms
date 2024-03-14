@@ -38,13 +38,13 @@ dotenv.config({ path: "backend/config/config.env" });
 // };
 
 exports.getStudent = asyncHandler(async (req, res, next) => {
-  const { adm_no } = req.params;
+  const { addmisson_no } = req.params;
 
   let sql;
   let values;
-  if (adm_no) {
-    sql = "SELECT * FROM students WHERE adm_no = ?";
-    values = [adm_no];
+  if (addmisson_no) {
+    sql = "SELECT * FROM students WHERE addmisson_no = ?";
+    values = [addmisson_no];
   } else {
     return next(new ErrorHandler("Missing parameters", 400));
   }
@@ -108,13 +108,13 @@ exports.getStudents = asyncHandler(async (req, res, next) => {
 
 exports.updateStudent = asyncHandler(async (req, res, next) => {
   const updatedFields = req.body;
-  const { adm_no } = req.params;
+  const { id } = req.params;
 
   const updateFieldsString = Object.keys(updatedFields)
     .map((key) => `${key}="${updatedFields[key]}"`)
     .join(", ");
 
-  const sql = `UPDATE students SET ${updateFieldsString} WHERE adm_no = '${adm_no}';`;
+  const sql = `UPDATE students SET ${updateFieldsString} WHERE student_id = '${id}';`;
 
   db.query(sql, (err, result) => {
     if (err) {

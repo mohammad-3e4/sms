@@ -9,6 +9,8 @@ import ResetPassword from "../src/pages/ResetPassword";
 import AddStudent from "../src/Component/student/AddStudent";
 import AddStaff from "./Component/staff/AddStaff";
 import AllStudents from "./Component/student/AllStudents";
+import AllStaff from "./Component/staff/AllStaff";
+import Details from "./Component/student/Details";
 
 function App() {
   return (
@@ -44,6 +46,22 @@ function App() {
           element={
             <Layout>
               <AllStudents/>
+            </Layout>
+          }
+        />
+        <Route
+          path="/all/staff"
+          element={
+            <Layout>
+              <AllStaff/>
+            </Layout>
+          }
+        />
+        <Route
+          path="/student/details/:id"
+          element={
+            <Layout>
+              <Details/>
             </Layout>
           }
         />
