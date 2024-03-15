@@ -64,7 +64,7 @@ exports.getClass = asyncHandler(async (req, res, next) => {
 });
 
 exports.getClasses = asyncHandler(async (req, res, next) => {
-  let sql = "SELECT * FROM students";
+  let sql = "SELECT * FROM classes";
 
   const { class: studentClass, section } = req.query;
 
