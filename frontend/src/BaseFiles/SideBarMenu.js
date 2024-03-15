@@ -84,9 +84,7 @@ const SidebarMenu = ({ toggleSidebar }) => {
               <Link to={`/all/students`}>
                 <MenuItem>All Student</MenuItem>
               </Link>
-              <MenuItem>
-                <Link to={``}>Student Detail</Link>
-              </MenuItem>
+           
               <Link to="/student/create">
                 <MenuItem>Admission Form</MenuItem>
               </Link>
@@ -100,7 +98,7 @@ const SidebarMenu = ({ toggleSidebar }) => {
               <Link to={`/all/staff`}>
                 <MenuItem>All Teachers</MenuItem>
               </Link>
-              <MenuItem>Teacher Detail</MenuItem>
+    
               <MenuItem>Assign Teacher</MenuItem>
               <Link to={`/staff/create`}>
                 <MenuItem>Add Teacher</MenuItem>
@@ -133,60 +131,7 @@ const SidebarMenu = ({ toggleSidebar }) => {
               <MenuItem>Generate Report Card</MenuItem>
             </SubMenu>
             <hr />
-            <SubMenu
-              label="Dashboard"
-              icon={<MdOutlineDashboard className="text-yellow-600" />}
-            >
-              <MenuItem>Admin</MenuItem>
-              <MenuItem>Student</MenuItem>
-              <MenuItem>Parent</MenuItem>
-            </SubMenu>
-            <hr />
-            <SubMenu
-              label="Student"
-              icon={<PiStudentBold className="text-yellow-600" />}
-            >
-              <MenuItem>All Student</MenuItem>
-              <MenuItem>Student Detail</MenuItem>
-              <MenuItem>Admission Form</MenuItem>
-              <MenuItem>Student Promotion</MenuItem>
-            </SubMenu>
-            <hr />
-            <SubMenu
-              label="Teacher"
-              icon={<GiTeacher className="text-yellow-600" />}
-            >
-              <MenuItem>All Teacher</MenuItem>
-              <MenuItem>Teacher Detail</MenuItem>
-              <MenuItem>Assign Teacher</MenuItem>
-              <MenuItem>Add Teacher</MenuItem>
-            </SubMenu>
-            <hr />
-            <SubMenu
-              label="Classes"
-              icon={<LiaSchoolSolid className="text-yellow-600" />}
-            >
-              <MenuItem>Class Detail</MenuItem>
-              <MenuItem>Create Class</MenuItem>
-            </SubMenu>
-            <hr />
-            <SubMenu
-              label="Library"
-              icon={<BiLibrary className="text-yellow-600" />}
-            >
-              <MenuItem>All Books</MenuItem>
-              <MenuItem>Issue Book</MenuItem>
-              <MenuItem>Issued Book Detail</MenuItem>
-              <MenuItem>Add New Book</MenuItem>
-            </SubMenu>
-            <hr />
-            <SubMenu
-              label="Result"
-              icon={<PiExam className="text-yellow-600" />}
-            >
-              <MenuItem>Marks Detail</MenuItem>
-              <MenuItem>Generate Report Card</MenuItem>
-            </SubMenu>
+    
           </Menu>
         )}
       </Sidebar>

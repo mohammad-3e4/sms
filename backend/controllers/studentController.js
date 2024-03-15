@@ -38,13 +38,13 @@ dotenv.config({ path: "backend/config/config.env" });
 // };
 
 exports.getStudent = asyncHandler(async (req, res, next) => {
-  const { addmisson_no } = req.params;
+  const { id } = req.params;
 
   let sql;
   let values;
-  if (addmisson_no) {
-    sql = "SELECT * FROM students WHERE addmisson_no = ?";
-    values = [addmisson_no];
+  if (id) {
+    sql = "SELECT * FROM students WHERE student_id = ?";
+    values = [id];
   } else {
     return next(new ErrorHandler("Missing parameters", 400));
   }

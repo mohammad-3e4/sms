@@ -6,7 +6,7 @@ import SuccessAlert from "../../BaseFiles/SuccessAlert";
 import { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import { addStudentValues } from "../InitialValues";
-import {Link} from 'react-router-dom'
+import { Link } from "react-router-dom";
 import {
   clearErrors,
   clearMessage,
@@ -25,7 +25,7 @@ const AllStaff = () => {
   const { loading, error, message, students } = useSelector(
     (state) => state.student
   );
-  const { user } = useSelector((state) => state.user);
+
   const dispatch = useDispatch();
   const [rotate, setRotate] = useState(false);
 
@@ -38,6 +38,8 @@ const AllStaff = () => {
       return () => clearInterval(errorInterval);
     }
     if (message) {
+      setEditMode(false);
+      setEditableStudent(null);
       const messageInterval = setInterval(() => {
         dispatch(clearMessage());
       }, 3000);
@@ -71,19 +73,21 @@ const AllStaff = () => {
 
   const formik = useFormik({
     initialValues: addStudentValues,
-    onSubmit:(values)=>{
+    onSubmit: (values) => {
       const filteredData = Object.fromEntries(
-        Object.entries(values).filter(([key, value]) => value !== "" && value !== null)
+        Object.entries(values).filter(
+          ([key, value]) => value !== "" && value !== null
+        )
       );
-      if(filteredData.length > 0) {
-        dispatch(updateStudent({studentId:editableStudent.student_id, updatedData:filteredData}));
-        
-      }else{
-        return alert("No Changes found! ")
-      }
-    }
-  });
 
+      dispatch(
+        updateStudent({
+          studentId: editableStudent.student_id,
+          updatedData: filteredData,
+        })
+      );
+    },
+  });
 
   return (
     <section className="py-1  w-full m-auto">
@@ -139,205 +143,212 @@ const AllStaff = () => {
                 <div className="text-center py-5">No data found</div>
               ) : (
                 students?.map((student) => (
-                    <tr
-                      className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
-                      key={student.email}
+                  <tr
+                    className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
+                    key={student.email}
+                  >
+                    <th
+                      scope="row"
+                      className="px-6 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                     >
-                      <th
-                        scope="row"
-                        className="px-6 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                      >
-                        {student.student_id}
-                      </th>
-                      <td className="px-2 py-2 w-10">
-                        <img
-                          src={
-                            student.gender === "Male"
-                              ? "/default_male.png"
-                              : "/default_female.png"
-                          }
+                      {student.student_id}
+                    </th>
+                    <td className="px-2 py-2 w-10">
+                      <img
+                        src={
+                          student.gender === "Male"
+                            ? "/default_male.png"
+                            : "/default_female.png"
+                        }
+                      />
+                    </td>
+                    <td className="px-2 py-2">
+                      {editMode &&
+                      editableStudent &&
+                      editableStudent.student_id === student.student_id ? (
+                        <input
+                          id="student_name"
+                          className="border-0 px-3 py-1 placeholder-blueGray-300  focus:bg-white text-gray-600  bg-gray-200 rounded-sm text-sm shadow focus:outline-none  w-full ease-linear transition-all duration-150"
+                          type="text"
+                          onChange={formik.handleChange}
+                          defaultValue={student.student_name}
                         />
-                      </td>
-                      <td className="px-2 py-2">
-                        {editMode &&
-                        editableStudent &&
-                        editableStudent.student_id === student.student_id ? (
-                          <input
-                            id="student_name"
-                            className="border-0 px-3 py-1 placeholder-blueGray-300  focus:bg-white text-gray-600  bg-gray-200 rounded-sm text-sm shadow focus:outline-none  w-full ease-linear transition-all duration-150"
-                            type="text"
-                            onChange={formik.handleChange}
-                            defaultValue={student.student_name}
-                          />
-                        ) : (
-                          <Link to={`/student/details/${student.student_id}`}>
+                      ) : (
+                        <Link to={`/student/details/${student.student_id}`}>
                           {student.student_name}
-                          </Link>
-                        )}
-                      </td>
-                      <td className="px-2 py-2">
-                        {editMode &&
-                        editableStudent &&
-                        editableStudent.student_id === student.student_id ? (
-                          <input
-                            id="gender"
-                            className="border-0 px-3 py-1 placeholder-blueGray-300  focus:bg-white text-gray-600  bg-gray-200 rounded-sm text-sm shadow focus:outline-none  w-full ease-linear transition-all duration-150"
-                            type="text"
-                            onChange={formik.handleChange}
-                            defaultValue={student.gender}
-                          />
-                        ) : (
-                          student.gender
-                        )}
-                      </td>
-                      <td className="px-2 py-2">
-                        {editMode &&
-                        editableStudent &&
-                        editableStudent.student_id === student.student_id ? (
-                          <input
-                            id="father_name"
-                            className="border-0 px-3 py-1 placeholder-blueGray-300  focus:bg-white text-gray-600  bg-gray-200 rounded-sm text-sm shadow focus:outline-none  w-full ease-linear transition-all duration-150"
-                            type="text"
-                            onChange={formik.handleChange}
-                            defaultValue={student.father_name}
-                          />
-                        ) : (
-                          student.father_name
-                        )}
-                      </td>
-                      <td className="px-2 py-2">
-                        {editMode &&
-                        editableStudent &&
-                        editableStudent.student_id === student.student_id ? (
-                          <input
-                            id="class_name"
-                            className="border-0 px-3 py-1 placeholder-blueGray-300  focus:bg-white text-gray-600  bg-gray-200 rounded-sm text-sm shadow focus:outline-none  w-full ease-linear transition-all duration-150"
-                            type="text"
-                            onChange={formik.handleChange}
-                            defaultValue={student.class_name}
-                          />
-                        ) : (
-                          student.class_name
-                        )}
-                      </td>
-                      <td className="px-2 py-2">
-                        {editMode &&
-                        editableStudent &&
-                        editableStudent.student_id === student.student_id ? (
-                          <input
-                            id="section"
-                            className="border-0 px-3 py-1 placeholder-blueGray-300  focus:bg-white text-gray-600  bg-gray-200 rounded-sm text-sm shadow focus:outline-none  w-full ease-linear transition-all duration-150"
-                            type="text"
-                            onChange={formik.handleChange}
-                            defaultValue={student.section}
-                          />
-                        ) : (
-                          student.section
-                        )}
-                      </td>
-                      <td className="px-2 py-2">
-                        {editMode &&
-                        editableStudent &&
-                        editableStudent.student_id === student.student_id ? (
-                          <input
-                            id="address"
-                            className="border-0 px-3 py-1 placeholder-blueGray-300  focus:bg-white text-gray-600  bg-gray-200 rounded-sm text-sm shadow focus:outline-none  w-full ease-linear transition-all duration-150"
-                            type="text"
-                            onChange={formik.handleChange}
-                            defaultValue={student.address.substring(0, 10)}
-                          />
-                        ) : (
-                          student.address.substring(0, 10)
-                        )}
-                      </td>
-                      <td className="px-2 py-2">
-                        {editMode &&
-                        editableStudent &&
-                        editableStudent.student_id === student.student_id ? (
-                          <input
-                            className="border-0 px-3 py-1 placeholder-blueGray-300  focus:bg-white text-gray-600  bg-gray-200 rounded-sm text-sm shadow focus:outline-none  w-full ease-linear transition-all duration-150"
-                            type="text"
-                            id="date_of_birth"
-                            onChange={formik.handleChange}
-                            defaultValue={new Date(
-                              student.date_of_birth
-                            ).toLocaleDateString("en-US")}
-                          />
-                        ) : (
-                          <>
+                        </Link>
+                      )}
+                    </td>
+                    <td className="px-2 py-2">
+                      {editMode &&
+                      editableStudent &&
+                      editableStudent.student_id === student.student_id ? (
+                        <input
+                          id="gender"
+                          className="border-0 px-3 py-1 placeholder-blueGray-300  focus:bg-white text-gray-600  bg-gray-200 rounded-sm text-sm shadow focus:outline-none  w-full ease-linear transition-all duration-150"
+                          type="text"
+                          onChange={formik.handleChange}
+                          defaultValue={student.gender}
+                        />
+                      ) : (
+                        student.gender
+                      )}
+                    </td>
+                    <td className="px-2 py-2">
+                      {editMode &&
+                      editableStudent &&
+                      editableStudent.student_id === student.student_id ? (
+                        <input
+                          id="father_name"
+                          className="border-0 px-3 py-1 placeholder-blueGray-300  focus:bg-white text-gray-600  bg-gray-200 rounded-sm text-sm shadow focus:outline-none  w-full ease-linear transition-all duration-150"
+                          type="text"
+                          onChange={formik.handleChange}
+                          defaultValue={student.father_name}
+                        />
+                      ) : (
+                        student.father_name
+                      )}
+                    </td>
+                    <td className="px-2 py-2">
+                      {editMode &&
+                      editableStudent &&
+                      editableStudent.student_id === student.student_id ? (
+                        <input
+                          id="class_name"
+                          className="border-0 px-3 py-1 placeholder-blueGray-300  focus:bg-white text-gray-600  bg-gray-200 rounded-sm text-sm shadow focus:outline-none  w-full ease-linear transition-all duration-150"
+                          type="text"
+                          onChange={formik.handleChange}
+                          defaultValue={student.class_name}
+                        />
+                      ) : (
+                        student.class_name
+                      )}
+                    </td>
+                    <td className="px-2 py-2">
+                      {editMode &&
+                      editableStudent &&
+                      editableStudent.student_id === student.student_id ? (
+                        <input
+                          id="section"
+                          className="border-0 px-3 py-1 placeholder-blueGray-300  focus:bg-white text-gray-600  bg-gray-200 rounded-sm text-sm shadow focus:outline-none  w-full ease-linear transition-all duration-150"
+                          type="text"
+                          onChange={formik.handleChange}
+                          defaultValue={student.section}
+                        />
+                      ) : (
+                        student.section
+                      )}
+                    </td>
+                    <td className="px-2 py-2">
+                      {editMode &&
+                      editableStudent &&
+                      editableStudent.student_id === student.student_id ? (
+                        <input
+                          id="address"
+                          className="border-0 px-3 py-1 placeholder-blueGray-300  focus:bg-white text-gray-600  bg-gray-200 rounded-sm text-sm shadow focus:outline-none  w-full ease-linear transition-all duration-150"
+                          type="text"
+                          onChange={formik.handleChange}
+                          defaultValue={student.address.substring(0, 10)}
+                        />
+                      ) : (
+                        student.address.substring(0, 10)
+                      )}
+                    </td>
+                    <td className="px-2 py-2">
+                      {editMode &&
+                      editableStudent &&
+                      editableStudent.student_id === student.student_id ? (
+                        <input
+                          className="border-0 px-3 py-1 placeholder-blueGray-300  focus:bg-white text-gray-600  bg-gray-200 rounded-sm text-sm shadow focus:outline-none  w-full ease-linear transition-all duration-150"
+                          type="text"
+                          id="date_of_birth"
+                          onChange={formik.handleChange}
+                          defaultValue={new Date(
+                            student.date_of_birth
+                          ).toLocaleDateString("en-US")}
+                        />
+                      ) : (
+                        <>
                           {" "}
                           {new Date(student.date_of_birth).toLocaleDateString(
                             "en-US"
                           )}
-                          </>
-                        )}
-                      </td>
-                      <td className="px-2 py-2">
-                        {editMode &&
-                        editableStudent &&
-                        editableStudent.student_id === student.student_id ? (
-                          <input
-                            className="border-0 px-3 py-1 placeholder-blueGray-300  focus:bg-white text-gray-600  bg-gray-200 rounded-sm text-sm shadow focus:outline-none  w-full ease-linear transition-all duration-150"
-                            type="text"
-                            id="phone"
-                            onChange={formik.handleChange}
-                            defaultValue={student.phone}
-                          />
-                        ) : (
-                          student.phone
-                        )}
-                      </td>
-                      <td className="px-2 py-2">
-                        {editMode &&
-                        editableStudent &&
-                        editableStudent.student_id === student.student_id ? (
-                          <input
-                            className="border-0 px-3 py-1 placeholder-blueGray-300  focus:bg-white text-gray-600  bg-gray-200 rounded-sm text-sm shadow focus:outline-none  w-full ease-linear transition-all duration-150"
-                            type="email"
-                            id="email"
-                            defaultValue={student.email}
-                            onChange={formik.handleChange}
-                          />
-                        ) : (
-                          student.email
-                        )}
-                      </td>
-                    
-                      <td className="px-2 py-4 flex gap-3 items-center ">
-                        {editMode &&
-                        editableStudent &&
-                        editableStudent.student_id === student.student_id ? (
-                          <FaXmark
-                            className="h-4 w-4 text-red-700 cursor-pointer"
-                            onClick={handleCancelEdit}
-                            title="cancel"
-                          />
-                        ) : (
-                          <FaEye className="h-4 w-4 cursor-pointer" title="details" />
-                        )}
-                        {editMode &&
-                        editableStudent &&
-                        editableStudent.student_id === student.student_id ? (
-                          <FaCheck
-                            className="h-4 w-4 text-green-700 cursor-pointer"
-                            onClick={formik.handleSubmit}
-                          title="Submit Changes"
-                          />
-                        ) : (
-                          <BsPencilSquare
-                            className="h-4 w-4 text-green-700 cursor-pointer"
-                            onClick={() => handleEdit(student)}
-                            title="Edit"
-                          />
-                        )}
-                        <FaRegTrashAlt
-                          className="h-4 w-4 text-red-700 cursor-pointer"
-                          onClick={() => dispatch(deleteStudent(student.student_id))}
-                          title="Delete"
+                        </>
+                      )}
+                    </td>
+                    <td className="px-2 py-2">
+                      {editMode &&
+                      editableStudent &&
+                      editableStudent.student_id === student.student_id ? (
+                        <input
+                          className="border-0 px-3 py-1 placeholder-blueGray-300  focus:bg-white text-gray-600  bg-gray-200 rounded-sm text-sm shadow focus:outline-none  w-full ease-linear transition-all duration-150"
+                          type="text"
+                          id="phone"
+                          onChange={formik.handleChange}
+                          defaultValue={student.phone}
                         />
-                      </td>
-                    </tr>
-                  ))
+                      ) : (
+                        student.phone
+                      )}
+                    </td>
+                    <td className="px-2 py-2">
+                      {editMode &&
+                      editableStudent &&
+                      editableStudent.student_id === student.student_id ? (
+                        <input
+                          className="border-0 px-3 py-1 placeholder-blueGray-300  focus:bg-white text-gray-600  bg-gray-200 rounded-sm text-sm shadow focus:outline-none  w-full ease-linear transition-all duration-150"
+                          type="email"
+                          id="email"
+                          defaultValue={student.email}
+                          onChange={formik.handleChange}
+                        />
+                      ) : (
+                        student.email
+                      )}
+                    </td>
+
+                    <td className="px-2 py-4 flex gap-3 items-center ">
+                      {editMode &&
+                      editableStudent &&
+                      editableStudent.student_id === student.student_id ? (
+                        <FaXmark
+                          className="h-4 w-4 text-red-700 cursor-pointer"
+                          onClick={handleCancelEdit}
+                          title="cancel"
+                        />
+                      ) : (
+                        <Link to={`/student/details/${student.student_id}`}>
+                          <FaEye
+                            className="h-4 w-4 cursor-pointer"
+                            title="Details"
+                          />
+                        </Link>
+                      )}
+                      {editMode &&
+                      editableStudent &&
+                      editableStudent.student_id === student.student_id ? (
+                        <FaCheck
+                          className="h-4 w-4 text-green-700 cursor-pointer"
+                          onClick={formik.handleSubmit}
+                          title="Submit Changes"
+                        />
+                      ) : (
+                        <BsPencilSquare
+                          className="h-4 w-4 text-green-700 cursor-pointer"
+                          onClick={() => handleEdit(student)}
+                          title="Edit"
+                        />
+                      )}
+                      <FaRegTrashAlt
+                        className="h-4 w-4 text-red-700 cursor-pointer"
+                        onClick={() =>
+                          dispatch(deleteStudent(student.student_id))
+                        }
+                        title="Delete"
+                      />
+                    </td>
+                  </tr>
+                ))
               )}
             </tbody>
           </table>

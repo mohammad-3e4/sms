@@ -39,14 +39,17 @@ const AdminLogin = () => {
         dispatch(clearErrors());
       }, 2000);
   
-      return () => clearTimeout(timer); 
+      return () => clearTimeout(timer);
     }
-    if(user?.user == null){
-      navigate('/')
-    }else{
-      navigate('/admin/dashboard')
+  
+    if (user === null) {
+      navigate('/');
+    } else {
+      navigate('/admin/dashboard');
     }
   }, [error, dispatch, navigate, user]);
+  
+
   return (
     <>
       <div className="relative isolate overflow-hidden bg-white px-6 py-24 sm:py-20 lg:overflow-visible lg:px-0">
