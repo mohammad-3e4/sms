@@ -48,6 +48,26 @@ export const getStaff = createAsyncThunk(
     }
   }
 );
+export const getStaffById = createAsyncThunk(
+  "staff/getMember",
+  async (staffId, thunkAPI) => {
+    try {
+      const response = await fetch(`/staff/${staffId}`);
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message);
+      }
+
+      const data = await response.json();
+
+      return data;
+    } catch (error) {
+      // Handle error
+      return thunkAPI.rejectWithValue({ error: error.message });
+    }
+  }
+);
 
 // Example asynchronous thunk to delete student
 export const deleteStaff = createAsyncThunk(
@@ -108,6 +128,7 @@ const initialState = {
   loading: false,
   error: null,
   message: null,
+  member: null,
 };
 
 const staffSlice = createSlice({
@@ -147,6 +168,19 @@ const staffSlice = createSlice({
         state.staff = action.payload.staff;
       })
       .addCase(getStaff.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload.error;
+      })
+      .addCase(getStaffById.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getStaffById.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = null;
+        state.member = action.payload.staff;
+      })
+      .addCase(getStaffById.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload.error;
       })

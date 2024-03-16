@@ -84,7 +84,7 @@ const SidebarMenu = ({ toggleSidebar }) => {
               <Link to={`/all/students`}>
                 <MenuItem>All Student</MenuItem>
               </Link>
-           
+
               <Link to="/student/create">
                 <MenuItem>Admission Form</MenuItem>
               </Link>
@@ -98,8 +98,9 @@ const SidebarMenu = ({ toggleSidebar }) => {
               <Link to={`/all/staff`}>
                 <MenuItem>All Teachers</MenuItem>
               </Link>
-    
-              <MenuItem>Assign Teacher</MenuItem>
+              <Link to={`/staff/assign`}>
+                <MenuItem>Assign Teacher</MenuItem>
+              </Link>
               <Link to={`/staff/create`}>
                 <MenuItem>Add Teacher</MenuItem>
               </Link>
@@ -131,7 +132,6 @@ const SidebarMenu = ({ toggleSidebar }) => {
               <MenuItem>Generate Report Card</MenuItem>
             </SubMenu>
             <hr />
-    
           </Menu>
         )}
       </Sidebar>

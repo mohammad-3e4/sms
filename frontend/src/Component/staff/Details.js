@@ -9,19 +9,18 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   clearErrors,
   clearMessage,
-  getStudentById,
-} from "../../redux/studentSlice";
+  getStaffById,
+} from "../../redux/staffSlice";
 import { useParams } from "react-router-dom";
 
 const Details = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
   const [rotate, setRotate] = useState(false);
-  const { loading, error, message, student } = useSelector(
-    (state) => state.student
+  const { loading, error, message, member } = useSelector(
+    (state) => state.staff
   );
 
-  console.log(id);
   const handleRefresh = () => {
     setRotate(true);
     setTimeout(() => {
@@ -29,7 +28,7 @@ const Details = () => {
     }, 1000);
   };
   useEffect(() => {
-    dispatch(getStudentById(id));
+    dispatch(getStaffById(id));
     if (error) {
       const errorInterval = setInterval(() => {
         dispatch(clearErrors());
@@ -48,7 +47,7 @@ const Details = () => {
     <section className="py-1  w-full m-auto">
       <div className="flex flex-wrap justify-between bg-white py-2 mb-1">
         <h6 className="text-gray-700 text-xl font-semibold font-sans px-4 tracking-wider w-1/2">
-          About {student?.student_name}
+          About {member?.staff_name}
         </h6>
         <div className="w-1/2 flex gap-5 justify-end px-4 items-center">
           <FaAngleDown className="text-yellow-700 cursor-pointer" />
@@ -77,11 +76,11 @@ const Details = () => {
             <div className="h-auto text-sm tracking-wide ">
               <div className="flex">
                 <div className="w-1/4 ">
-                  <img className="w-28" src="/default_male.png" />
+                  <img className="max-w-full" src="/teacherimg.webp" />
                 </div>
                 <div className="flex w-3/4  justify-between mx-5 ">
                   <div className="w-1/2 ml-12 font-sans">
-                    <ul className="">
+                    <ul className="capitalize tracking-widest">
                       <li className="p-1 ">
                         <span className=" bg-gray-500 rounded-full text-white px-4">
                           Name
@@ -94,31 +93,31 @@ const Details = () => {
                       </li>
                       <li className="p-1">
                         <span className=" bg-gray-500 rounded-full text-white px-4">
-                          Father Name
+                          Role
                         </span>
                       </li>
                       <li className="p-1">
                         {" "}
                         <span className=" bg-gray-500 rounded-full text-white px-4">
-                          Mother Name
+                        qualification
                         </span>
                       </li>
                       <li className="p-1">
                         {" "}
                         <span className=" bg-gray-500 rounded-full text-white px-4">
-                          Date of Birth
+                          Joining Date
                         </span>
                       </li>
                     </ul>
                   </div>
                   <div className="w-1/2 capitalize font-sans font-semibold text-gray-700">
                     <ul>
-                      <li className="p-1">{student?.student_name}</li>
-                      <li className="p-1">{student?.gender}</li>
-                      <li className="p-1">{student?.father_name}</li>
-                      <li className="p-1">{student?.mother_name}</li>
+                      <li className="p-1">{member?.staff_name}</li>
+                      <li className="p-1">{member?.gender}</li>
+                      <li className="p-1">{member?.role}</li>
+                      <li className="p-1">{member?.qualification}</li>
                       <li className="p-1">
-                        {new Date(student?.date_of_birth).toLocaleDateString()}
+                        {new Date(member?.joining_date).toLocaleDateString()}
                       </li>
                     </ul>
                   </div>
@@ -126,60 +125,43 @@ const Details = () => {
               </div>
               <hr className="my-10" />
               <div className="flex flex-wrap md:flex-nowrap">
-                <div className="flex w-1/3 justify-between mx-5 my-2 text-xs border-r-4 ">
+                <div className="flex w-1/2 justify-between mx-5 my-2 text-xs border-r-4 ">
                   <ul className="font-semibold">
                     <li className="p-1">Email : </li>
-                    <li className="p-1">Admission Date : </li>
+                    <li className="p-1">Experience: </li>
                     <li className="p-1">class : </li>
+                    <li className="p-1">Subject : </li>
                     <li className="p-1">Address : </li>
-                    <li className="p-1">Phone : </li>
-                    <li className="p-1">Religion : </li>
+             
                   </ul>
                   <ul className="text-end px-3">
-                    <li className="p-1">{student?.email}</li>
+                    <li className="p-1">{member?.email}</li>
                     <li className="p-1">
-                      {new Date(
-                        student?.date_of_admission
-                      ).toLocaleDateString()}
+                      {member?.experience}
                     </li>
-                    <li className="p-1">{student?.class_name}</li>
-                    <li className="p-1">{student?.address}</li>
-                    <li className="p-1">{student?.phone}</li>
-                    <li className="p-1">{student?.religion}</li>
+                    <li className="p-1">{5}</li>
+                    <li className="p-1">{'Hindi, English'}</li>
+                    <li className="p-1">{member?.address}</li>
+                  
                   </ul>
                 </div>
-                <div className="flex w-1/3 justify-between capitalize mx-5 my-2 text-xs border-r-4">
+                <div className="flex w-1/2 justify-between capitalize mx-5 my-2 text-xs border-r-4">
                   <ul className="font-semibold">
-                    <li className="p-1">Admission No : </li>
-                    <li className="p-1">Roll No : </li>
-                    <li className="p-1">Category : </li>
-                    <li className="p-1">Alternate phone : </li>
-                    <li className="p-1">Father Occupation : </li>
-                    <li className="p-1">Mother Occupation : </li>
+                    <li className="p-1">Phone: </li>
+                    <li className="p-1">Religion : </li>
+                    <li className="p-1">Account No.: </li>
+                    <li className="p-1">IFSC Code : </li>
+                
                   </ul>
                   <ul className="text-end px-3">
-                    <li className="p-1">{student?.admission_no}</li>
-                    <li className="p-1">{student?.roll_no}</li>
-                    <li className="p-1">{student?.reserve_category}</li>
-                    <li className="p-1">{student?.alternative_phone_no}</li>
-                    <li className="p-1">{student?.father_occupation}</li>
-                    <li className="p-1">{student?.mother_occupation}</li>
+                  <li className="p-1">{member?.phone}</li>
+                    <li className="p-1">{member?.religion}</li>
+                    <li className="p-1">{member?.bank_account_number}</li>
+                    <li className="p-1">{member?.ifsc_code}</li>
+               
                   </ul>
                 </div>
-                <div className="flex w-1/3 justify-between capitalize mx-5 my-2 text-xs ">
-                  <ul className="font-semibold">
-                    <li className="p-1">Quota : </li>
-                    <li className="p-1">height : </li>
-                    <li className="p-1">weight : </li>
-                    <li className="p-1">blood group : </li>
-                  </ul>
-                  <ul className="text-end">
-                    <li className="p-1">{student?.admission_no}</li>
-                    <li className="p-1">{student?.roll_no}</li>
-                    <li className="p-1">{student?.religion}</li>
-                    <li className="p-1">{student?.blood_group}</li>
-                  </ul>
-                </div>
+              
               </div>
             </div>
           </div>

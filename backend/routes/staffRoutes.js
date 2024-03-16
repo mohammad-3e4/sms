@@ -13,7 +13,7 @@ const {
 router.get("/", isAuthenticatedUser,authorizeRoles('admin'), getStaff);
 router
   .route("/:id")
-  .get(getMember)
+  .get(isAuthenticatedUser, authorizeRoles("admin"),getMember)
   .delete(isAuthenticatedUser, authorizeRoles("admin"), deleteMember)
   .post(isAuthenticatedUser, authorizeRoles("admin", "teacher"), updateMember);
 

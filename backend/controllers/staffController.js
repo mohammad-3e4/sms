@@ -14,7 +14,7 @@ exports.getMember = asyncHandler(async (req, res, next) => {
   let sql;
   let values;
   if (id) {
-    sql = "SELECT * FROM staff WHERE ID = ?";
+    sql = "SELECT * FROM staff WHERE staff_id = ?";
     values = [id];
   } else {
     return next(new ErrorHandler("Missing parameters", 400));

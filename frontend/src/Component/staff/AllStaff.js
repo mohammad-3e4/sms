@@ -6,7 +6,7 @@ import SuccessAlert from "../../BaseFiles/SuccessAlert";
 import { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import { addStaffValues } from "../InitialValues";
-import {Link} from 'react-router-dom'
+import { Link } from "react-router-dom";
 import {
   clearErrors,
   clearMessage,
@@ -51,6 +51,7 @@ const AllStaff = () => {
     "Name",
     "Gender",
     "Designation",
+    "Role",
     "Joined Date",
     "Address",
     "Mobile",
@@ -173,7 +174,9 @@ const AllStaff = () => {
                             defaultValue={member.staff_name}
                           />
                         ) : (
-                          <Link to={`/staff/${member.staff_id}`} >{member.staff_name}</Link>
+                          <Link to={`/staff/details/${member.staff_id}`}>
+                            {member.staff_name}
+                          </Link>
                         )}
                       </td>
                       <td className="px-2 py-2">
@@ -204,6 +207,21 @@ const AllStaff = () => {
                           />
                         ) : (
                           member.designation
+                        )}
+                      </td>
+                      <td className="px-2 py-2">
+                        {editMode &&
+                        editableMember &&
+                        editableMember.staff_id === member.staff_id ? (
+                          <input
+                            id="role"
+                            className="border-0 px-3 py-1 placeholder-blueGray-300  focus:bg-white text-gray-600  bg-gray-200 rounded-sm text-sm shadow focus:outline-none  w-full ease-linear transition-all duration-150"
+                            type="text"
+                            onChange={formik.handleChange}
+                            defaultValue={member.role}
+                          />
+                        ) : (
+                          member.role
                         )}
                       </td>
                       <td className="px-2 py-2">
@@ -295,10 +313,12 @@ const AllStaff = () => {
                             title="cancel"
                           />
                         ) : (
-                          <FaEye
-                            className="h-4 w-4 cursor-pointer"
-                            title="details"
-                          />
+                          <Link to={`/staff/details/${member.staff_id}`}>
+                            <FaEye
+                              className="h-4 w-4 cursor-pointer"
+                              title="details"
+                            />
+                          </Link>
                         )}
                         {editMode &&
                         editableMember &&

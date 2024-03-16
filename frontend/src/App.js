@@ -12,6 +12,9 @@ import AllStudents from "./Component/student/AllStudents";
 import AllStaff from "./Component/staff/AllStaff";
 import Details from "./Component/student/Details";
 
+import TeacherDetails from './Component/staff/Details';
+import AssignTeacher from "./Component/staff/AssignTeacher";
+
 function App() {
   return (
     <Router>
@@ -62,6 +65,22 @@ function App() {
           element={
             <Layout>
               <Details/>
+            </Layout>
+          }
+        />
+        <Route
+          path="/staff/details/:id"
+          element={
+            <Layout>
+              <TeacherDetails/>
+            </Layout>
+          }
+        />
+        <Route
+          path="/staff/assign"
+          element={
+            <Layout>
+              <AssignTeacher/>
             </Layout>
           }
         />
