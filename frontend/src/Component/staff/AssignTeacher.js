@@ -4,15 +4,12 @@ import { FaAngleDown, FaArrowsRotate, FaXmark, FaEye } from "react-icons/fa6";
 import ErrorAlert from "../../BaseFiles/ErrorAlert";
 import SuccessAlert from "../../BaseFiles/SuccessAlert";
 import { useEffect, useState } from "react";
-import { useFormik } from "formik";
-import { addStaffValues } from "../InitialValues";
+ import TeacherClassesModal from "../../Component/staff/AssignTeacherModel";
 import { Link } from "react-router-dom";
 import {
   clearErrors,
   clearMessage,
-  deleteStaff,
   getStaff,
-  updateStaff,
 } from "../../redux/staffSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { IoSettingsOutline } from "react-icons/io5";
@@ -21,8 +18,7 @@ import { RiArrowUpDownLine } from "react-icons/ri";
 
 const AssignTeacher = () => {
   const currentUrl = window.location.href;
-  const [editMode, setEditMode] = useState(false);
-  const [editableMember, setEditableMember] = useState(null);
+  const [selectedTeacher, setSelectedTeacher] = useState(null)
   const { loading, error, message, staff } = useSelector(
     (state) => state.staff
   );
@@ -57,35 +53,11 @@ const AssignTeacher = () => {
     "Join Date",
   ];
 
-  const handleEdit = (member) => {
-    setEditableMember(member);
-    setEditMode(true);
-  };
-
-  const handleCancelEdit = () => {
-    setEditMode(false);
-    setEditableMember(null);
-  };
 
   const handleRefresh = () => {
     setRotate(!rotate);
   };
-  const formik = useFormik({
-    initialValues: addStaffValues,
-    onSubmit: (values) => {
-      const filteredData = Object.fromEntries(
-        Object.entries(values).filter(
-          ([key, value]) => value !== "" && value !== null
-        )
-      );
-      dispatch(
-        updateStaff({
-          staffId: editableMember.staff_id,
-          updatedData: filteredData,
-        })
-      );
-    },
-  });
+
   const handleFilterByDate = () =>{
 
   }
@@ -184,7 +156,7 @@ const AssignTeacher = () => {
                       <td className="px-2 py-2">{member.experience}</td>
                       <td className="px-2 py-2">{new Date(member.joining_date).toLocaleDateString()}</td>
                       <td className="px-2 py-4 flex gap-3 items-center ">
-                        <IoSettingsOutline className="text-green-700 w-5 h-5 cursor-pointer hover:text-green-400" />
+                        <IoSettingsOutline className="text-green-700 w-5 h-5 cursor-pointer hover:text-green-400" onClick={()=>setSelectedTeacher(member)} />
                       </td>
                     </tr>
                   ))
@@ -192,7 +164,20 @@ const AssignTeacher = () => {
             </tbody>
           </table>
         )}
+        
+ 
       </div>
+      {selectedTeacher && (
+        <TeacherClassesModal
+          // Allclasses={Allclasses}
+          // selectedTeacher={selectedTeacher}
+          // data={jsonData}
+          // setJsonData={setJsonData}
+          // onClose={closeClassModal}
+          // teacherData={teacherData}
+          // selectedTeacherName={selectedTeacherName}
+        />
+      )}
     </section>
   );
 };

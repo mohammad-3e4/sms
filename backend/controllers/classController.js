@@ -1,41 +1,81 @@
 const ErrorHandler = require("../utils/errorHandler");
-const catchAsyncErrors = require("../middlewares/cathAsyncErrorsMiddleware");
+const catchAsyncErrors = require("../middlewares/catchAsyncErrorsMiddleware");
 const sendToken = require("../utils/jwtToken");
 const asyncHandler = require("express-async-handler");
 const dotenv = require("dotenv");
 const db = require("../config/database");
+
 dotenv.config({ path: "backend/config/config.env" });
-//  Register new us
 
-exports.createClass =  catchAsyncErrors( async (req, res, next) => {
-  res.send("ok")
+// Register new class
+exports.createClass = catchAsyncErrors(async (req, res, next) => {
   try {
-    const studentBioData = req.body;
+    const { class_name, class_section, ...subjectsData } = req.body;
+    const classParts = class_name.split("_");
+    const class_j = classParts[1];
+    const class_value = classParts[0];
+    const class_full_name = `${class_j}-${class_section}`;
 
-    const tableName = "students";
+    // Check if the class with the same class_j and class_section already exists
+    const checkQuery = `
+        SELECT * FROM classes
+        WHERE class_name = '${class_full_name}'`;
 
-    const columns = Object.keys(studentBioData).join(", ");
-    const valuesPlaceholders = Object.keys(studentBioData)
-      .map(() => "?")
-      .join(", ");
+    const [existingClassResult] = await db.promise().query(checkQuery);
 
-    const insertQuery = `INSERT INTO ${tableName} (${columns}) VALUES (${valuesPlaceholders})`;
+    if (existingClassResult.length > 0) {
+      return next(new ErrorHandler(400, "Class already exists"));
+    }
 
-    const values = Object.values(studentBioData);
+    // If the class doesn't exist, proceed with insertion
+    const subjectsColumns = Object.keys(subjectsData);
+    const subjectsValues = Object.values(subjectsData);
 
-    console.log(values);
+    const subjectsPlaceholders = subjectsColumns.map(() => "?").join(", ");
 
-    await db.promise().query(insertQuery, values);
+    const insertQuery = `
+        INSERT INTO classes (
+          class_name, class_value,  ${subjectsColumns.join(", ")}
+        ) VALUES (?, ?,  ${subjectsPlaceholders})`;
 
-    res.status(201).json({
-      success: true,
-      message: `Student bio-data created successfully`,
-    });
+    const insertValues = [class_full_name, class_value, ...subjectsValues];
+
+    await db.promise().query(insertQuery, insertValues);
+
+    res
+      .status(201)
+      .json({ success: true, message: "Class is created successfully" });
   } catch (error) {
-    console.error("Error creating student bio-data:", error);
-    res.status(500).json({ success: false, message: "Internal server error" });
+    console.error("Error creating teacher:", error);
+    next(new ErrorHandler(500, "Internal server error"));
   }
 });
+
+exports.getSubjects = catchAsyncErrors(async (req, res, next) => {
+  try {
+    const result = await new Promise((resolve, reject) => {
+      db.query("DESCRIBE classes", (error, results) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(results);
+        }
+      });
+    });
+
+    if (result.length < 4) {
+      throw new ErrorHandler(404, "No subjects found");
+    }
+
+    const columnNames = result.slice(3).map((column) => column.Field);
+
+    res.json(columnNames);
+  } catch (error) {
+    console.error("Error fetching subjects:", error);
+    next(error);
+  }
+});
+
 
 exports.getClass = asyncHandler(async (req, res, next) => {
   const { adm_no } = req.params;
