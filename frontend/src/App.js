@@ -11,79 +11,92 @@ import AddStaff from "./Component/staff/AddStaff";
 import AllStudents from "./Component/student/AllStudents";
 import AllStaff from "./Component/staff/AllStaff";
 import Details from "./Component/student/Details";
+import PrivateRoute from "./BaseFiles/PrivateRoutes";
 
-import TeacherDetails from './Component/staff/Details';
+import TeacherDetails from "./Component/staff/Details";
 import AssignTeacher from "./Component/staff/AssignTeacher";
+import CreateClass from "./Component/Classes/CreateClass";
 
 function App() {
   return (
     <Router>
       <Routes>
-        <Route
-          path="/admin/dashboard"
-          element={
-            <Layout>
-              <AdminDashboard />
-            </Layout>
-          }
-        />
+        <Route element={<PrivateRoute />}>
+          <Route
+            path="/admin/dashboard"
+            element={
+              <Layout>
+                <AdminDashboard />
+              </Layout>
+            }
+          />
+
+          <Route
+            path="/student/create"
+            element={
+              <Layout>
+                <AddStudent />
+              </Layout>
+            }
+          />
+          <Route
+            path="/staff/create"
+            element={
+              <Layout>
+                <AddStaff />
+              </Layout>
+            }
+          />
+          <Route
+            path="/all/students"
+            element={
+              <Layout>
+                <AllStudents />
+              </Layout>
+            }
+          />
+          <Route
+            path="/all/staff"
+            element={
+              <Layout>
+                <AllStaff />
+              </Layout>
+            }
+          />
+          <Route
+            path="/student/details/:id"
+            element={
+              <Layout>
+                <Details />
+              </Layout>
+            }
+          />
+          <Route
+            path="/staff/details/:id"
+            element={
+              <Layout>
+                <TeacherDetails />
+              </Layout>
+            }
+          />
+          <Route
+            path="/staff/assign"
+            element={
+              <Layout>
+                <AssignTeacher />
+              </Layout>
+            }
+          />
+          <Route
+            path="/class/create"
+            element={
+              <Layout>
+                <CreateClass />
+              </Layout>
+            }
+          />
+        </Route>
         <Route path="/" element={<AdminLogin />} />
-        <Route
-          path="/student/create"
-          element={
-            <Layout>
-              <AddStudent />
-            </Layout>
-          }
-        />
-        <Route
-          path="/staff/create"
-          element={
-            <Layout>
-              <AddStaff />
-            </Layout>
-          }
-        />
-        <Route
-          path="/all/students"
-          element={
-            <Layout>
-              <AllStudents/>
-            </Layout>
-          }
-        />
-        <Route
-          path="/all/staff"
-          element={
-            <Layout>
-              <AllStaff/>
-            </Layout>
-          }
-        />
-        <Route
-          path="/student/details/:id"
-          element={
-            <Layout>
-              <Details/>
-            </Layout>
-          }
-        />
-        <Route
-          path="/staff/details/:id"
-          element={
-            <Layout>
-              <TeacherDetails/>
-            </Layout>
-          }
-        />
-        <Route
-          path="/staff/assign"
-          element={
-            <Layout>
-              <AssignTeacher/>
-            </Layout>
-          }
-        />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route path="*" element={<NotFound />} />

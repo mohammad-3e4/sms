@@ -2,6 +2,7 @@ const experss = require("express");
 const authRoutes = require("./routes/authRoutes");
 const staffRoutes = require("./routes/staffRoutes");
 const studentRoutes = require("./routes/studentRoutes");
+const classRoutes = require("./routes/classRoutes");
 const db = require("./config/database");
 const cors = require("cors");
 const multer = require("multer");
@@ -110,6 +111,7 @@ app.post("/api/v1/staff",isAuthenticatedUser, authorizeRoles('admin'),  upload.s
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/student", studentRoutes);
 app.use("/api/v1/staff", staffRoutes);
+app.use("/api/v1/class", classRoutes);
 
 // Middle wares
 app.use(errorMiddleware);

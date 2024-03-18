@@ -1,6 +1,5 @@
 const ErrorHandler = require("../utils/errorHandler");
-const catchAsyncErrors = require("../middlewares/catchAsyncErrorsMiddleware");
-const sendToken = require("../utils/jwtToken");
+const catchAsyncErrors = require("../middlewares/cathAsyncErrorsMiddleware");
 const asyncHandler = require("express-async-handler");
 const dotenv = require("dotenv");
 const db = require("../config/database");
@@ -51,7 +50,7 @@ exports.createClass = catchAsyncErrors(async (req, res, next) => {
   }
 });
 
-exports.getSubjects = catchAsyncErrors(async (req, res, next) => {
+exports.getSubjectsFromClas = catchAsyncErrors(async (req, res, next) => {
   try {
     const result = await new Promise((resolve, reject) => {
       db.query("DESCRIBE classes", (error, results) => {
@@ -74,33 +73,6 @@ exports.getSubjects = catchAsyncErrors(async (req, res, next) => {
     console.error("Error fetching subjects:", error);
     next(error);
   }
-});
-
-
-exports.getClass = asyncHandler(async (req, res, next) => {
-  const { adm_no } = req.params;
-
-  let sql;
-  let values;
-  if (adm_no) {
-    sql = "SELECT * FROM students WHERE adm_no = ?";
-    values = [adm_no];
-  } else {
-    return next(new ErrorHandler("Missing parameters", 400));
-  }
-
-  db.query(sql, values, (err, result) => {
-    if (err) {
-      console.error("Error during retrieval:", err);
-      return next(new ErrorHandler("Error during retrieval", 500));
-    }
-
-    if (result.length > 0) {
-      res.status(200).json({ success: true, student: result[0] });
-    } else {
-      return next(new ErrorHandler("Student not found", 404));
-    }
-  });
 });
 
 exports.getClasses = asyncHandler(async (req, res, next) => {
@@ -146,51 +118,70 @@ exports.getClasses = asyncHandler(async (req, res, next) => {
   }
 });
 
-exports.updateClass = asyncHandler(async (req, res, next) => {
-  const updatedFields = req.body;
-  const { adm_no } = req.params;
-
-  const updateFieldsString = Object.keys(updatedFields)
-    .map((key) => `${key}="${updatedFields[key]}"`)
-    .join(", ");
-
-  const sql = `UPDATE students SET ${updateFieldsString} WHERE adm_no = '${adm_no}';`;
-
-  db.query(sql, (err, result) => {
-    if (err) {
-      console.error("Error during update:", err);
-      next(new ErrorHandler("Error during update", 500));
-    }
-
-    if (result.affectedRows > 0) {
-      res.status(200).json({ success: true, message: "Update successful" });
-    } else {
-      next(new ErrorHandler("User not found or no changes applied", 404));
-    }
-  });
+exports.deleteSubjectFromClass = catchAsyncErrors(async (req, res, next) => {
+  const Subject = req.body;
+  try {
+    const deletionPromises = Subject.map((subject) => {
+      return new Promise((resolve, reject) => {
+        const dropColumnQuery = `
+                          ALTER TABLE classes
+                          DROP COLUMN ${subject};
+                      `;
+        db.query(dropColumnQuery, (err, results) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(subject);
+          }
+        });
+      });
+    });
+    Promise.all(deletionPromises)
+      .then((completed) => {
+        res.json({ message: "Subjects deleted successfully" });
+      })
+      .catch((error) => {
+        console.error("Error deleting subjects:", error);
+        res.status(500).json({ message: "Error deleting subjects" });
+      });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
 });
 
-exports.deleteClass = asyncHandler(async (req, res, next) => {
-  const { adm_no } = req.params;
-
-  if (!adm_no) {
-    return next(new ErrorHandler("Admission number (adm_no) is required", 400));
-  }
-
-  const sql = `DELETE FROM students WHERE adm_no = ?`;
-
-  db.query(sql, [adm_no], (err, result) => {
-    if (err) {
-      console.error("Error during deletion:", err);
-      return next(new ErrorHandler("Error during deletion", 500));
-    }
-
-    if (result.affectedRows > 0) {
-      res.status(200).json({ success: true, message: "Deletion successful" });
+exports.addSubjectInClass = catchAsyncErrors(async (req, res, next) => {
+  let { newSubject, newVocationalSubject, action } = req.body;
+  console.log(newSubject, newVocationalSubject);
+  try {
+    let addColumnQuery;
+    if (!newSubject && !newVocationalSubject) {
+      return res.status(400).json({ message: "Subject not provided" });
     } else {
-      return next(
-        new ErrorHandler("Student not found or no changes applied", 404)
-      );
+      if (action === "nonvoc") {
+        newSubject = newSubject.replace(/ /g, "_");
+        addColumnQuery = `
+            ALTER TABLE classes
+            ADD COLUMN ${newSubject} VARCHAR(255) DEFAULT 'no';
+        `;
+      } else {
+        newVocationalSubject = newVocationalSubject.replace(/ /g, "_");
+        addColumnQuery = `
+          ALTER TABLE classes
+          ADD COLUMN vocational_${newVocationalSubject} VARCHAR(255) DEFAULT 'no';
+      `;
+      }
     }
-  });
+    db.query(addColumnQuery, (err, results) => {
+      if (err) {
+        console.error("Error adding column:", err);
+        return res.status(500).json({ message: "Error adding column" });
+      } else {
+        res.json({ message: "Subject added successfully" });
+      }
+    });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
 });
