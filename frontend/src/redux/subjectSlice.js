@@ -51,9 +51,11 @@ export const deleteSubjects = createAsyncThunk(
 );
 export const addSubjects = createAsyncThunk(
   "classes/addSubjects",
+
   async (subjects, thunkAPI) => {
+    console.log(subjects)
     try {
-      const response = await fetch(`http://localhost:3001/api/v1/class/subject`, {
+      const response = await fetch(`/class/subject`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

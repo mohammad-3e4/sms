@@ -101,7 +101,7 @@ const classSlice = createSlice({
       .addCase(getClasses.fulfilled, (state, action) => {
         state.loading = false;
         state.error = null;
-        state.classes = action.payload;
+        state.classes = action.payload.classes;
       })
       .addCase(getClasses.rejected, (state, action) => {
         state.loading = false;

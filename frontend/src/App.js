@@ -16,6 +16,7 @@ import PrivateRoute from "./BaseFiles/PrivateRoutes";
 import TeacherDetails from "./Component/staff/Details";
 import AssignTeacher from "./Component/staff/AssignTeacher";
 import CreateClass from "./Component/Classes/CreateClass";
+import EditClass from "./Component/Classes/EditClass";
 
 function App() {
   return (
@@ -92,6 +93,14 @@ function App() {
             element={
               <Layout>
                 <CreateClass />
+              </Layout>
+            }
+          />
+          <Route
+            path="/class/edit"
+            element={
+              <Layout>
+                <EditClass />
               </Layout>
             }
           />

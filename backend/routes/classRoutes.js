@@ -14,12 +14,9 @@ const {
 router
   .get("/", isAuthenticatedUser, authorizeRoles("admin"), getClasses)
   .post("/", isAuthenticatedUser, authorizeRoles("admin"), createClass);
-router.get(
-  "/subject",
-  isAuthenticatedUser,
-  authorizeRoles("admin"),
-  getSubjectsFromClas
-).post(isAuthenticatedUser, authorizeRoles("admin"), addSubjectInClass );
+  router.route('/subject')
+  .get(isAuthenticatedUser, authorizeRoles("admin"), getSubjectsFromClas)
+  .post(isAuthenticatedUser, authorizeRoles("admin"), addSubjectInClass);
 
 router
   .route("/subject/delete")

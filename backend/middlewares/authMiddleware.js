@@ -11,7 +11,7 @@ exports.isAuthenticatedUser = async (request, response, next) => {
     const token = request.cookies.token; // Assuming you're using a cookie parser middleware
 
     if (!token) {
-      console.log("HIi");
+    
 
       return next(
         new ErrorHandler("Login first to access this resource!", 401)
@@ -28,7 +28,7 @@ exports.isAuthenticatedUser = async (request, response, next) => {
     const sql = "SELECT * FROM staff WHERE staff_id = ?";
     db.query(sql, [decode.staff_id], (err, results) => {
       if (err) {
-        console.log(err);
+        console.log(err)
         throw new ErrorHandler("Error finding user in database", 500); // Internal Server Error
       }
 
@@ -37,7 +37,7 @@ exports.isAuthenticatedUser = async (request, response, next) => {
       }
 
       request.user = results[0];
-      console.log("request user", results[0]);
+    
       next();
     });
   } catch (error) {

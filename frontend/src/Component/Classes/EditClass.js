@@ -1,12 +1,12 @@
 import { useSelector, useDispatch } from "react-redux";
-import { getClasses ,updateClasses,clearError,clearMessages} from "../redux/classesSlice";
+import { getClasses ,updateClasses,clearError,clearMessages} from "../../redux/classesSlice";
 import React, { useState, useEffect } from "react";
 import { FaCheckCircle } from "react-icons/fa";
 import { MdCancel } from "react-icons/md";
-import Loader from "../BaseFiles/Loader";
+import Loader from "../../BaseFiles/Loader";
 import { FaAngleDown, FaArrowsRotate, FaXmark } from "react-icons/fa6";
-import ErrorAlert from "../BaseFiles/ErrorAlert";
-import SuccessAlert from "../BaseFiles/SuccessAlert";
+import ErrorAlert from "../../BaseFiles/ErrorAlert";
+import SuccessAlert from "../../BaseFiles/SuccessAlert";
 
 export default function EditClass() {
 const [rotate, setRotate] = useState(false);

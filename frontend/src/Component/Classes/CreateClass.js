@@ -28,18 +28,18 @@ const CreateClass = () => {
 
   useEffect(() => {
     dispatch(getSubjects());
-    if (error) {
-      const errorInterval = setInterval(() => {
-        dispatch(clearError());
-      }, 3000);
-      return () => clearInterval(errorInterval);
-    }
-    if (message) {
-      const messageInterval = setInterval(() => {
-        dispatch(clearMessages());
-      }, 3000);
-      return () => clearInterval(messageInterval);
-    }
+    // if (error) {
+    //   const errorInterval = setInterval(() => {
+    //     dispatch(clearError());
+    //   }, 3000);
+    //   return () => clearInterval(errorInterval);
+    // }
+    // if (message) {
+    //   const messageInterval = setInterval(() => {
+    //     dispatch(clearMessages());
+    //   }, 3000);
+    //   return () => clearInterval(messageInterval);
+    // }
   }, [dispatch, error, message]);
 
   const initialValues = {
@@ -96,7 +96,6 @@ const CreateClass = () => {
       console.error("Error deleteing subject:", error);
     }
   };
-  console.log(subjects);
   return (
     <section className="py-1  w-full m-auto">
       <div className="flex flex-wrap justify-between bg-white py-1 mb-1">

@@ -80,7 +80,7 @@ exports.getStaff = asyncHandler(async (req, res, next) => {
 exports.updateMember = asyncHandler(async (req, res, next) => {
   const updatedFields = req.body;
   const { id } = req.params;
-  console.log(req.body);
+  
   const updateFieldsString = Object.keys(updatedFields)
     .map((key) => `${key}="${updatedFields[key]}"`)
     .join(", ");
@@ -103,7 +103,7 @@ exports.updateMember = asyncHandler(async (req, res, next) => {
 
 exports.deleteMember = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
- console.log('delete',id);
+
   if (!id) {
     return next(new ErrorHandler("Admission number (ID) is required", 400));
   }

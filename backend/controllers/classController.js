@@ -8,6 +8,7 @@ dotenv.config({ path: "backend/config/config.env" });
 
 // Register new class
 exports.createClass = catchAsyncErrors(async (req, res, next) => {
+  console.log(req.body);
   try {
     const { class_name, class_section, ...subjectsData } = req.body;
     const classParts = class_name.split("_");
@@ -87,7 +88,7 @@ exports.getClasses = asyncHandler(async (req, res, next) => {
         console.error("Error during retrieval:", err);
         return next(new ErrorHandler("Error during retrieval", 500));
       }
-      res.status(200).json({ success: true, students: result });
+      res.status(200).json({ success: true, classes: result });
     });
   } else if (studentClass) {
     sql += ` WHERE class_name = ?`;
@@ -105,7 +106,7 @@ exports.getClasses = asyncHandler(async (req, res, next) => {
         console.error("Error during retrieval:", err);
         return next(new ErrorHandler("Error during retrieval", 500));
       }
-      res.status(200).json({ success: true, students: result });
+      res.status(200).json({ success: true, classes: result });
     });
   } else {
     db.query(sql, (err, result) => {
@@ -113,7 +114,7 @@ exports.getClasses = asyncHandler(async (req, res, next) => {
         console.error("Error during retrieval:", err);
         return next(new ErrorHandler("Error during retrieval", 500));
       }
-      res.status(200).json({ success: true, students: result });
+      res.status(200).json({ success: true, classes: result });
     });
   }
 });
@@ -152,7 +153,7 @@ exports.deleteSubjectFromClass = catchAsyncErrors(async (req, res, next) => {
 
 exports.addSubjectInClass = catchAsyncErrors(async (req, res, next) => {
   let { newSubject, newVocationalSubject, action } = req.body;
-  console.log(newSubject, newVocationalSubject);
+
   try {
     let addColumnQuery;
     if (!newSubject && !newVocationalSubject) {
@@ -169,13 +170,19 @@ exports.addSubjectInClass = catchAsyncErrors(async (req, res, next) => {
         addColumnQuery = `
           ALTER TABLE classes
           ADD COLUMN vocational_${newVocationalSubject} VARCHAR(255) DEFAULT 'no';
-      `;
+        `;
       }
     }
     db.query(addColumnQuery, (err, results) => {
       if (err) {
-        console.error("Error adding column:", err);
-        return res.status(500).json({ message: "Error adding column" });
+      
+        if (err.code === 'ER_DUP_FIELDNAME') {
+          console.log(err);
+          next (new ErrorHandler(400, err.message));
+        } else {
+          console.error("Error adding column:", err);
+          return res.status(500).json({ message: "Error adding column" });
+        }
       } else {
         res.json({ message: "Subject added successfully" });
       }
@@ -185,3 +192,4 @@ exports.addSubjectInClass = catchAsyncErrors(async (req, res, next) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+

@@ -132,7 +132,7 @@ exports.updateStudent = asyncHandler(async (req, res, next) => {
 
 exports.deleteStudent = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
- console.log(id);
+ 
   if (!id) {
     return next(new ErrorHandler("Admission number (id) is required", 400));
   }
