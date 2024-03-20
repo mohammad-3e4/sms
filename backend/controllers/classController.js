@@ -46,10 +46,15 @@ exports.createClass = catchAsyncErrors(async (req, res, next) => {
       .status(201)
       .json({ success: true, message: "Class is created successfully" });
   } catch (error) {
+    if (error.code === 'ER_DUP_ENTRY') {
+      // Send the specific error received from the database
+      return res.status(400).json({ success: false, error: error.message });
+    }
     console.error("Error creating teacher:", error);
     next(new ErrorHandler(500, "Internal server error"));
   }
 });
+
 
 exports.getSubjectsFromClas = catchAsyncErrors(async (req, res, next) => {
   try {
@@ -175,10 +180,9 @@ exports.addSubjectInClass = catchAsyncErrors(async (req, res, next) => {
     }
     db.query(addColumnQuery, (err, results) => {
       if (err) {
-      
-        if (err.code === 'ER_DUP_FIELDNAME') {
-          console.log(err);
-          next (new ErrorHandler(400, err.message));
+        if (err.code === "ER_DUP_FIELDNAME") {
+          console.log("hiii ", err.message);
+          res.status(500).json({ error: err.message });
         } else {
           console.error("Error adding column:", err);
           return res.status(500).json({ message: "Error adding column" });
@@ -189,7 +193,41 @@ exports.addSubjectInClass = catchAsyncErrors(async (req, res, next) => {
     });
   } catch (error) {
     console.error("Error:", error);
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).json({ error: error.message });
   }
 });
 
+exports.removeSubjectFromClass = catchAsyncErrors(async (req, res, next) => {
+  const Subject = req.body;
+  try {
+    const deletionPromises = Subject.map((subject) => {
+      return new Promise((resolve, reject) => {
+        const dropColumnQuery = `
+                          ALTER TABLE classes
+                          DROP COLUMN ${subject};
+                      `;
+        console.log(dropColumnQuery);
+        db.query(dropColumnQuery, (err, results) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(subject);
+          }
+        });
+      });
+    });
+
+    Promise.all(deletionPromises)
+      .then((completed) => {
+        res.json({ message: "Subjects deleted successfully" });
+      })
+      .catch((error) => {
+        // If any of the promises were rejected, catch the error here
+        console.error("Error deleting subjects:", error);
+        res.status(500).json({ message: "Error deleting subjects" });
+      });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});

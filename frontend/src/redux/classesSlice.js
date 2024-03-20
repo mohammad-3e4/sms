@@ -24,7 +24,7 @@ export const getClasses = createAsyncThunk(
 
 export const updateClasses = createAsyncThunk(
   "classes/updateClasses",
-  async ({ className, subject ,act}, thunkAPI) => {
+  async ({ className, subject, act }, thunkAPI) => {
     try {
       // Your asynchronous logic to update classes here
       const response = await fetch(`/class/update`, {
@@ -51,20 +51,24 @@ export const updateClasses = createAsyncThunk(
 );
 export const createClass = createAsyncThunk(
   "classes/createClass",
-  async ({ class_name, class_section}, thunkAPI) => {
+  async (values, thunkAPI) => {
     try {
-      const response = await fetch(`/class/`, {
+      const response = await fetch(`/class`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ class_name, class_section }),
+        body: JSON.stringify(values),
       });
 
       if (response.ok) {
-        return await response.json();
+        const data = await response.json();
+        console.log(data);
+        return data;
       } else {
-        throw new Error("Failed to update classes");
+        // If response is not ok, handle the error and return it
+        const errorData = await response.json();
+        throw new Error(errorData.error);
       }
     } catch (error) {
       // Handle error
@@ -105,7 +109,7 @@ const classSlice = createSlice({
       })
       .addCase(getClasses.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload.error; 
+        state.error = action.payload.error;
       })
       .addCase(updateClasses.pending, (state) => {
         state.loading = true;
@@ -132,7 +136,7 @@ const classSlice = createSlice({
       .addCase(createClass.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload.error;
-      })
+      });
   },
 });
 

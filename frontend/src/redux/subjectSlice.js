@@ -29,7 +29,7 @@ export const deleteSubjects = createAsyncThunk(
   async (deleteSubjects, thunkAPI) => {
     try {
       const response = await fetch(`/class/subject/delete`, {
-        method: "POST",
+        method: "DELETE",
         headers: {
           "Content-Type": "application/json",
         },
@@ -38,6 +38,7 @@ export const deleteSubjects = createAsyncThunk(
 
       if (!response.ok) {
         const errorData = await response.json();
+        console.log(errorData);
         throw new Error(errorData.message);
       }
 
@@ -45,15 +46,14 @@ export const deleteSubjects = createAsyncThunk(
       return data;
     } catch (error) {
       // Handle error
-      return thunkAPI.rejectWithValue({ error: error.message });
+      console.log(error);
+      return thunkAPI.rejectWithValue({ error: error });
     }
   }
 );
 export const addSubjects = createAsyncThunk(
   "classes/addSubjects",
-
   async (subjects, thunkAPI) => {
-    console.log(subjects)
     try {
       const response = await fetch(`/class/subject`, {
         method: "POST",
@@ -65,15 +65,12 @@ export const addSubjects = createAsyncThunk(
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message);
+        throw new Error(errorData.error);
       }
 
-      const data = await response.json();
-      console.log(data);
-      return data;
+      return await response.json();
     } catch (error) {
-      // Handle error
-      return thunkAPI.rejectWithValue({ error: error.message });
+      return thunkAPI.rejectWithValue({ error:error.message});
     }
   }
 );
@@ -83,6 +80,7 @@ const initialState = {
   loading: false,
   error: null,
   message: null,
+  err: null
 };
 
 const subjectsSlice = createSlice({
@@ -94,7 +92,9 @@ const subjectsSlice = createSlice({
     },
     clearError: (state) => {
       state.error = null;
+      state.err = null;
     },
+ 
     // Define any synchronous actions here if needed
   },
   extraReducers: (builder) => {
@@ -136,8 +136,10 @@ const subjectsSlice = createSlice({
         state.message = action.payload.message;
       })
       .addCase(addSubjects.rejected, (state, action) => {
+        
         state.loading = false;
-        state.error = action.payload.error; // Use error message from rejected action
+        state.err = action.payload.error;
+     
       });
   },
 });
