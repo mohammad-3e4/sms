@@ -81,7 +81,7 @@ function App() {
             }
           />
           <Route
-            path="/staff/assign"
+            path="/teacher/assign"
             element={
               <Layout>
                 <AssignTeacher />

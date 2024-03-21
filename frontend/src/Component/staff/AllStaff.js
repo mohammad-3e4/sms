@@ -83,6 +83,8 @@ const AllStaff = () => {
           updatedData: filteredData,
         })
       );
+      setEditMode(false)
+      setEditableMember(null)
     },
   });
 

@@ -62,6 +62,8 @@ const AssignTeacher = () => {
 
   }
 
+  console.log(selectedTeacher);
+
   return (
     <section className="py-1  w-full m-auto">
       <div className="flex flex-wrap justify-between shadow bg-white py-2 mb-1">
@@ -167,17 +169,20 @@ const AssignTeacher = () => {
         
  
       </div>
-      {selectedTeacher && (
+      {selectedTeacher && 
+      (
         <TeacherClassesModal
           // Allclasses={Allclasses}
-          // selectedTeacher={selectedTeacher}
+          selectedTeacher={selectedTeacher}
           // data={jsonData}
           // setJsonData={setJsonData}
           // onClose={closeClassModal}
           // teacherData={teacherData}
           // selectedTeacherName={selectedTeacherName}
         />
-      )}
+      )
+    //  <h1>Hii</h1>
+      }
     </section>
   );
 };

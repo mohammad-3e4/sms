@@ -82,11 +82,11 @@ const SidebarMenu = ({ toggleSidebar }) => {
               icon={<PiStudentBold className="text-yellow-600" />}
             >
               <Link to={`/all/students`}>
-                <MenuItem>All Student</MenuItem>
+                <MenuItem>Students</MenuItem>
               </Link>
 
               <Link to="/student/create">
-                <MenuItem>Admission Form</MenuItem>
+                <MenuItem>Admission Student</MenuItem>
               </Link>
               <MenuItem>Student Promotion</MenuItem>
             </SubMenu>
@@ -96,9 +96,9 @@ const SidebarMenu = ({ toggleSidebar }) => {
               icon={<GiTeacher className="text-yellow-600" />}
             >
               <Link to={`/all/staff`}>
-                <MenuItem>All Teachers</MenuItem>
+                <MenuItem>Staff</MenuItem>
               </Link>
-              <Link to={`/staff/assign`}>
+              <Link to={`/teacher/assign`}>
                 <MenuItem>Assign Teacher</MenuItem>
               </Link>
               <Link to={`/staff/create`}>
@@ -111,7 +111,7 @@ const SidebarMenu = ({ toggleSidebar }) => {
               label="Classes"
               icon={<LiaSchoolSolid className="text-yellow-600" />}
             >
-              <Link to="/class/edit"><MenuItem>Class Detail</MenuItem></Link>
+              <Link to="/class/edit"><MenuItem>Edit Class</MenuItem></Link>
               <Link to="/class/create"><MenuItem>Create Class</MenuItem></Link>
             </SubMenu>
             <hr />

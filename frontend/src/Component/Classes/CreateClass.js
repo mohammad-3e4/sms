@@ -2,12 +2,12 @@ import React from "react";
 import Loader from "../../BaseFiles/Loader";
 import { FaAngleDown, FaArrowsRotate, FaXmark } from "react-icons/fa6";
 import ErrorAlert from "../../BaseFiles/ErrorAlert";
-import { AiFillDelete } from "react-icons/ai";
+
 import SuccessAlert from "../../BaseFiles/SuccessAlert";
 import { useState, useEffect } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { FaPlus } from "react-icons/fa";
+import { FaPlusCircle } from "react-icons/fa";
 import {
   clearError as customClearError,
   clearMessages as customClearMessages,
@@ -144,15 +144,15 @@ const CreateClass = () => {
           <Loader />
         ) : (
           <div className="w-full  px-4 mx-auto mt-10 bg-white">
-            <div className="flex-auto px-4 py-1 pt-0">
+            <div className="flex-auto px-4 py-10 pt-0">
               <form className="py-1">
-                <h6 className="text-gray-600   text-sm px-2 mt-3 mb-6 font-bold uppercase">
+                <h6 className="text-gray-600   text-sm px-2 mt-3 mb-6 font-bold uppercase tracking-widest">
                   Class Information
                   <div className="h-1 bg-gray-700 w-16 my-3"></div>
                 </h6>
-                <div className="flex flex-wrap mb-5">
-                  <div className="w-1/2 px-2">
-                    <div className=" w-full mb-3">
+                <div className="flex flex-wrap mb-16">
+                  <div className="w-full lg:w-3/12 px-2">
+                    <div className="relative w-full mb-3">
                       <label
                         className="block capitalize tracking-widest text-gray-600  text-xs font-bold mb-2"
                         htmlFor="class_name"
@@ -165,7 +165,7 @@ const CreateClass = () => {
                         value={formik.values.class_name}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
-                        className={`border-0 px-3 py-1 placeholder-blueGray-300  focus:bg-white text-gray-600  bg-gray-200 rounded-sm text-sm shadow focus:outline-none  w-full ease-linear transition-all duration-150 ${
+                        className={`border-0 px-3 py-2 placeholder-blueGray-300  focus:bg-white text-gray-600  bg-gray-200 rounded-sm text-sm shadow focus:outline-none  w-full ease-linear transition-all duration-150 ${
                           formik.touched.class_name && formik.errors.class_name
                             ? "border-red-500"
                             : ""
@@ -195,8 +195,7 @@ const CreateClass = () => {
                       </p>
                     )}
                   </div>
-
-                  <div className="w-1/2 px-2">
+                  <div className="w-full lg:w-3/12 px-2">
                     <div className="relative w-full mb-3">
                       <label
                         className="block capitalize tracking-widest text-gray-600  text-xs font-bold mb-2"
@@ -210,7 +209,7 @@ const CreateClass = () => {
                         value={formik.values.class_section}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
-                        className={`border-0 px-3 py-1 placeholder-blueGray-300  focus:bg-white text-gray-600  bg-gray-200 rounded-sm text-sm shadow focus:outline-none  w-full ease-linear transition-all duration-150 ${
+                        className={`border-0 px-3 py-2 placeholder-blueGray-300  focus:bg-white text-gray-600  bg-gray-200 rounded-sm text-sm shadow focus:outline-none  w-full ease-linear transition-all duration-150 ${
                           formik.touched.class_section &&
                           formik.errors.class_section
                             ? "border-red-500"
@@ -233,96 +232,15 @@ const CreateClass = () => {
                         </p>
                       )}
                   </div>
-
-                  <button
-                    onClick={handleDelSubjectSubmit}
-                    className="relative inline-flex items-center justify-start  overflow-hidden  uppercase text-xs px-4 py-1 rounded transition-all bg-red-500 font-semibold group"
-                  >
-                    <span className="absolute top-0 right-0 inline-block w-4 h-4 transition-all duration-500 ease-in-out bg-red-700 rounded group-hover:-mr-4 group-hover:-mt-4">
-                      <span className="absolute top-0 right-0 w-5 h-5 rotate-45 translate-x-1/2 -translate-y-1/2 bg-white"></span>
-                    </span>
-                    <span className="absolute bottom-0 left-0 w-full h-full transition-all duration-500 ease-in-out delay-200 -translate-x-full translate-y-full bg-red-600 rounded-2xl group-hover:mb-12 group-hover:translate-x-0"></span>
-                    <span className="relative w-full text-left text-white transition-colors duration-200 ease-in-out group-hover:text-white">
-                      Delete Subject
-                    </span>
-                  </button>
-                </div>
-                <hr className="mt-6 border-b-1 border-blueGray-300 py-1" />
-                <div className="flex justify-between">
-                  <div className="w-1/2 ">
-                    <div className="flex justify-between">
-                      <div>
-                        <h6 className="text-gray-600   text-sm px-2 mt-3 mb-6 font-bold uppercase">
-                          Select Subject
-                          <div className="h-1 bg-gray-700 w-16 my-3"></div>
-                        </h6>
-                      </div>
-                      <div>
-                        <input
-                          type="text"
-                          id="new_subject"
-                          value={newSubject}
-                          onChange={(e) => setNewSubject(e.target.value)}
-                          className="border-0  py-1 mt-3 placeholder-blueGray-300  focus:bg-white text-gray-600  bg-gray-200 rounded-sm text-sm shadow focus:outline-none  w-full ease-linear transition-all duration-150 "
-                        />
-                      </div>
-                      <div className="py-4 pr-12">
-                        <FaPlus onClick={AddsubjectSubmit} />
-                      </div>
-                    </div>
-                    <div className="flex flex-wrap border-r-2  border-gray-900 pt-5">
-                      {subjects
-                        ?.filter(
-                          (subject) =>
-                            !subject.toLowerCase().startsWith("vocational")
-                        )
-                        .map((subject) => (
-                          <div key={subject} className="w-full lg:w-3/12 px-4">
-                            <div className=" w-full mb-3 flex justify-between items-center">
-                              <label
-                                className="uppercase text-blueGray-600 text-xs font-bold mb-2"
-                                htmlFor={subject}
-                              >
-                                {subject}
-                              </label>
-                              <input
-                                type="checkbox"
-                                id={subject}
-                                checked={formik.values[subject]}
-                                onChange={(e) =>
-                                  formik.setFieldValue(
-                                    subject,
-                                    e.target.checked
-                                  )
-                                }
-                                onBlur={formik.handleBlur}
-                                className={`shadow-md rounded-lg  ${
-                                  formik.touched[subject] &&
-                                  formik.errors[subject]
-                                    ? "border-red-500"
-                                    : ""
-                                }`}
-                              />
-                            </div>
-                            {formik.touched[subject] &&
-                              formik.errors[subject] && (
-                                <p className="text-red-500 text-xs mt-1">
-                                  {formik.errors[subject]}
-                                </p>
-                              )}
-                          </div>
-                        ))}
-                    </div>
-                  </div>
-                  <div className="w-1/2 ">
-                    <div className="flex justify-between">
-                      <div>
-                        <h6 className="text-gray-600   text-sm px-2 mt-3 mb-6 font-bold uppercase">
-                          Select Vocational Subject
-                          <div className="h-1 bg-gray-700 w-16 my-3"></div>
-                        </h6>
-                      </div>
-                      <div>
+                  <div className="w-full lg:w-3/12 px-2">
+                    <div className="relative w-full mb-3">
+                      <label
+                        className="block capitalize tracking-widest text-gray-600  text-xs font-bold mb-2"
+                        htmlFor="class_section"
+                      >
+                        Add Vocational subject
+                      </label>
+                      <div className=" relative">
                         <input
                           type="text"
                           id="new_vocational_subject"
@@ -330,83 +248,158 @@ const CreateClass = () => {
                           onChange={(e) =>
                             setNewVocationalSubject(e.target.value)
                           }
-                          className="border-0  py-1 mt-3 placeholder-blueGray-300  focus:bg-white text-gray-600  bg-gray-200 rounded-sm text-sm shadow focus:outline-none  w-full ease-linear transition-all duration-150 "
+                          className={`border-0 px-3 py-2 placeholder-blueGray-300  focus:bg-white text-gray-600  bg-gray-200 rounded-sm text-sm shadow focus:outline-none  w-full ease-linear transition-all duration-150 ${
+                            formik.touched.password && formik.errors.password
+                              ? "border-red-500"
+                              : ""
+                          }`}
                         />
-                      </div>
-                      <div className="py-4 pr-12">
-                        <FaPlus onClick={AddVocationalsubjectSubmit} />
+                        <span
+                          onClick={AddVocationalsubjectSubmit}
+                          className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5 text-gray-600 cursor-pointer"
+                        >
+                          <FaPlusCircle
+                            className="h-4 w-4 text-green-600"
+                            aria-hidden="true"
+                          />
+                        </span>
                       </div>
                     </div>
-                    <div className="flex flex-wrap border-r-2  border-gray-900 pt-5">
-                      {subjects
-                        ?.filter((subject) =>
-                          subject.toLowerCase().startsWith("vocational")
-                        )
-                        .map((subject) => (
-                          <div key={subject} className="w-full lg:w-6/12 px-4">
-                            <div className=" w-full mb-3 flex justify-between items-center">
-                              <label
-                                className="uppercase text-blueGray-600 text-xs font-bold mb-2"
-                                htmlFor={subject}
-                              >
-                                {subject}
-                              </label>
-                              <input
-                                type="checkbox"
-                                id={subject}
-                                checked={formik.values[subject]}
-                                onChange={(e) =>
-                                  formik.setFieldValue(
-                                    subject,
-                                    e.target.checked
-                                  )
-                                }
-                                onBlur={formik.handleBlur}
-                                className={`shadow-md rounded-lg  ${
-                                  formik.touched[subject] &&
-                                  formik.errors[subject]
-                                    ? "border-red-500"
-                                    : ""
-                                }`}
-                              />
-                            </div>
-                            {formik.touched[subject] &&
-                              formik.errors[subject] && (
-                                <p className="text-red-500 text-xs mt-1">
-                                  {formik.errors[subject]}
-                                </p>
-                              )}
-                          </div>
-                        ))}
+                  </div>
+                  <div className="w-full lg:w-3/12 px-2">
+                    <div className="relative w-full mb-3">
+                      <label
+                        className="block capitalize tracking-widest text-gray-600  text-xs font-bold mb-2"
+                        htmlFor="class_section"
+                      >
+                        Add subject
+                      </label>
+
+                      <div className=" relative">
+                        <input
+                          type="text"
+                          id="new_subject"
+                          value={newSubject}
+                          onChange={(e) => setNewSubject(e.target.value)}
+                          className={`border-0 px-3 py-2 placeholder-blueGray-300  focus:bg-white text-gray-600  bg-gray-200 rounded-sm text-sm shadow focus:outline-none  w-full ease-linear transition-all duration-150 ${
+                            formik.touched.password && formik.errors.password
+                              ? "border-red-500"
+                              : ""
+                          }`}
+                        />
+                        <span
+                          onClick={AddsubjectSubmit}
+                          className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5 text-gray-600 cursor-pointer"
+                        >
+                          <FaPlusCircle
+                            className="h-4 w-4 text-green-600"
+                            aria-hidden="true"
+                          />
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
                 <hr className="mt-6 border-b-1 border-blueGray-300 py-1" />
-                <div className="mx-3 flex justify-start gap-5">
-                  <button
-                    type="button"
-                    onClick={formik.handleSubmit}
-                    className="relative inline-flex items-center justify-start  overflow-hidden  uppercase text-xs px-4 py-1 rounded transition-all bg-amber-500 font-semibold group"
-                  >
-                    <span className="absolute top-0 right-0 inline-block w-4 h-4 transition-all duration-500 ease-in-out bg-amber-500 rounded group-hover:-mr-4 group-hover:-mt-4">
-                      <span className="absolute top-0 right-0 w-5 h-5 rotate-45 translate-x-1/2 -translate-y-1/2 bg-white"></span>
-                    </span>
-                    <span className="absolute bottom-0 left-0 w-full h-full transition-all duration-500 ease-in-out delay-200 -translate-x-full translate-y-full bg-amber-500 rounded-2xl group-hover:mb-12 group-hover:translate-x-0"></span>
-                    <span className="relative w-full text-left text-white transition-colors duration-200 ease-in-out group-hover:text-white">
-                      Submit
-                    </span>
-                  </button>
+                <h6 className="text-gray-600   text-sm px-2 mt-3 mb-6 font-bold uppercase tracking-widest">
+                  Subjects
+                  <div className="h-1 bg-gray-700 w-16 my-3"></div>
+                </h6>
+                <div className="flex flex-wrap md:flex-nowrap">
+                  <div className="w-full md:w-1/2 border-r-0 md:border-r-2 border-gray-900 pt-5">
+                    {subjects
+                      ?.filter(
+                        (subject) =>
+                          !subject.toLowerCase().startsWith("vocational")
+                      )
+                      .map((subject) => (
+                        <div key={subject} className="w-full px-4 mb-3 md:mb-0">
+                          <div className="w-full flex justify-between items-center">
+                            <label
+                              className="uppercase text-gray-600 tracking-wider text-xs font-bold mb-2"
+                              htmlFor={subject}
+                            >
+                              {subject}
+                            </label>
+                            <input
+                              type="checkbox"
+                              id={subject}
+                              checked={formik.values[subject]}
+                              onChange={(e) =>
+                                formik.setFieldValue(subject, e.target.checked)
+                              }
+                              onBlur={formik.handleBlur}
+                              className={`shadow-md rounded-lg ${
+                                formik.touched[subject] &&
+                                formik.errors[subject]
+                                  ? "border-red-500"
+                                  : ""
+                              }`}
+                            />
+                          </div>
+                          {formik.touched[subject] &&
+                            formik.errors[subject] && (
+                              <p className="text-red-500 text-xs mt-1">
+                                {formik.errors[subject]}
+                              </p>
+                            )}
+                        </div>
+                      ))}
+                  </div>
 
+                  <div className="w-full md:w-1/2 border-gray-900 pt-5">
+                    {subjects
+                      ?.filter((subject) =>
+                        subject.toLowerCase().startsWith("vocational")
+                      )
+                      .map((subject) => (
+                        <div key={subject} className="w-full px-4 mb-3 md:mb-0">
+                          <div className="w-full flex justify-between items-center">
+                            <label
+                              className="uppercase text-gray-600  tracking-wider text-xs font-bold mb-2"
+                              htmlFor={subject}
+                            >
+                              {subject}
+                            </label>
+                            <input
+                              type="checkbox"
+                              id={subject}
+                              checked={formik.values[subject]}
+                              onChange={(e) =>
+                                formik.setFieldValue(subject, e.target.checked)
+                              }
+                              onBlur={formik.handleBlur}
+                              className={`shadow-md rounded-lg ${
+                                formik.touched[subject] &&
+                                formik.errors[subject]
+                                  ? "border-red-500"
+                                  : ""
+                              }`}
+                            />
+                          </div>
+                          {formik.touched[subject] &&
+                            formik.errors[subject] && (
+                              <p className="text-red-500 text-xs mt-1">
+                                {formik.errors[subject]}
+                              </p>
+                            )}
+                        </div>
+                      ))}
+                  </div>
+                </div>
+
+                <hr className="mt-6 border-b-1 border-blueGray-300 py-1" />
+                <div className="px-2">
                   <button
-                    onClick={formik.resetForm}
-                    className="relative inline-flex items-center justify-start  overflow-hidden  uppercase text-xs px-4 py-1 rounded transition-all bg-blue-500 font-semibold group"
+                    onClick={handleDelSubjectSubmit}
+                    className="relative inline-flex items-center justify-start  overflow-hidden  uppercase text-xs px-4 py-2 rounded transition-all bg-red-500 font-semibold group"
                   >
-                    <span className="absolute top-0 right-0 inline-block w-4 h-4 transition-all duration-500 ease-in-out bg-blue-500 rounded group-hover:-mr-4 group-hover:-mt-4">
+                    <span className="absolute top-0 right-0 inline-block w-4 h-4 transition-all duration-500 ease-in-out bg-red-700 rounded group-hover:-mr-4 group-hover:-mt-4">
                       <span className="absolute top-0 right-0 w-5 h-5 rotate-45 translate-x-1/2 -translate-y-1/2 bg-white"></span>
                     </span>
-                    <span className="absolute bottom-0 left-0 w-full h-full transition-all duration-500 ease-in-out delay-200 -translate-x-full translate-y-full bg-blue-500 rounded-2xl group-hover:mb-12 group-hover:translate-x-0"></span>
+                    <span className="absolute bottom-0 left-0 w-full h-full transition-all duration-500 ease-in-out delay-200 -translate-x-full translate-y-full bg-red-600 rounded-2xl group-hover:mb-12 group-hover:translate-x-0"></span>
                     <span className="relative w-full text-left text-white transition-colors duration-200 ease-in-out group-hover:text-white">
-                      Reset form
+                      Delete Subject
                     </span>
                   </button>
                 </div>

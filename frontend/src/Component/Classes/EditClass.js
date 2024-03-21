@@ -6,7 +6,7 @@ import {
   clearMessages,
 } from "../../redux/classesSlice";
 import React, { useState, useEffect } from "react";
-import { FaCheckCircle } from "react-icons/fa";
+import { FaCheckCircle, FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import { MdCancel } from "react-icons/md";
 import Loader from "../../BaseFiles/Loader";
 import { FaAngleDown, FaArrowsRotate, FaXmark } from "react-icons/fa6";
@@ -48,12 +48,8 @@ export default function EditClass() {
     }
   }, [dispatch, error, message]);
 
-  const handleRemoveClick = async (className, subject, act) => {
-    try {
-      dispatch(updateClasses({ className, subject, act }));
-    } catch (error) {
-      console.error("Error removing class:", error);
-    }
+  const handleAssignClass = async (className, subject, action) => {
+    dispatch(updateClasses({ className, subject, action }));
   };
 
   return (
@@ -156,40 +152,40 @@ export default function EditClass() {
                                   key={subject}
                                   className="border border-gray-200 py-12"
                                 >
-                                  <td className="px-32 py-2 border-r-2 border-gray-800">
+                                  <td className="px-32  border-r-2 border-gray-800">
                                     {classData[subject] === "yes" && (
                                       <div
-                                        className="flex justify-between items-center cursor-pointer"
+                                        className="flex justify-between py-2 items-center cursor-pointer"
                                         onClick={() =>
-                                          handleRemoveClick(
+                                          handleAssignClass(
                                             classData.class_name,
                                             subject,
-                                            "rem"
+                                            "remove"
                                           )
                                         }
                                       >
-                                        <MdCancel
-                                          className="h-4 w-4 mr-2 text-red-500"
+                                        <FaArrowRight
+                                          className="h-4 w-4 mr-2 text-green-500"
                                           aria-hidden="true"
                                         />
                                         {subject}
                                       </div>
                                     )}
                                   </td>
-                                  <td className="px-32 py-1 ">
+                                  <td className="px-32">
                                     {classData[subject] === "no" && (
                                       <div
-                                        className="flex justify-between items-center cursor-pointer"
+                                        className="flex justify-between py-2 items-center cursor-pointer"
                                         onClick={() =>
-                                          handleRemoveClick(
+                                          handleAssignClass(
                                             classData.class_name,
                                             subject,
                                             "add"
                                           )
                                         }
                                       >
-                                        <FaCheckCircle
-                                          className="h-4 w-4 mr-2 text-green-500"
+                                        <FaArrowLeft
+                                          className="h-4 w-4 mr-2 text-red-500"
                                           aria-hidden="true"
                                         />
                                         {subject}

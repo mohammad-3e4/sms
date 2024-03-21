@@ -46,7 +46,7 @@ exports.createClass = catchAsyncErrors(async (req, res, next) => {
       .status(201)
       .json({ success: true, message: "Class is created successfully" });
   } catch (error) {
-    if (error.code === 'ER_DUP_ENTRY') {
+    if (error.code === "ER_DUP_ENTRY") {
       // Send the specific error received from the database
       return res.status(400).json({ success: false, error: error.message });
     }
@@ -54,7 +54,6 @@ exports.createClass = catchAsyncErrors(async (req, res, next) => {
     next(new ErrorHandler(500, "Internal server error"));
   }
 });
-
 
 exports.getSubjectsFromClas = catchAsyncErrors(async (req, res, next) => {
   try {
@@ -124,38 +123,6 @@ exports.getClasses = asyncHandler(async (req, res, next) => {
   }
 });
 
-exports.deleteSubjectFromClass = catchAsyncErrors(async (req, res, next) => {
-  const Subject = req.body;
-  try {
-    const deletionPromises = Subject.map((subject) => {
-      return new Promise((resolve, reject) => {
-        const dropColumnQuery = `
-                          ALTER TABLE classes
-                          DROP COLUMN ${subject};
-                      `;
-        db.query(dropColumnQuery, (err, results) => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(subject);
-          }
-        });
-      });
-    });
-    Promise.all(deletionPromises)
-      .then((completed) => {
-        res.json({ message: "Subjects deleted successfully" });
-      })
-      .catch((error) => {
-        console.error("Error deleting subjects:", error);
-        res.status(500).json({ message: "Error deleting subjects" });
-      });
-  } catch (error) {
-    console.error("Error:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
-
 exports.addSubjectInClass = catchAsyncErrors(async (req, res, next) => {
   let { newSubject, newVocationalSubject, action } = req.body;
 
@@ -206,7 +173,6 @@ exports.removeSubjectFromClass = catchAsyncErrors(async (req, res, next) => {
                           ALTER TABLE classes
                           DROP COLUMN ${subject};
                       `;
-        console.log(dropColumnQuery);
         db.query(dropColumnQuery, (err, results) => {
           if (err) {
             reject(err);
@@ -231,3 +197,42 @@ exports.removeSubjectFromClass = catchAsyncErrors(async (req, res, next) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+exports.updateClass = catchAsyncErrors(async (req, res, next) => {
+  try {
+    const { className, subject, action } = req.body;
+
+    let newValue;
+    if (action === "add") {
+      newValue = "yes";
+    } else if (action === "remove") {
+      newValue = "no";
+    } else {
+      return res.status(400).json({ error: "Invalid action" });
+    }
+
+    const updateQuery = `
+      UPDATE classes
+      SET ${subject} = ?
+      WHERE class_name = ?;
+    `;
+
+    db.query(updateQuery, [newValue, className], (err, results) => {
+      if (err) {
+        console.error("Error updating subject value:", err);
+        return res.status(500).json({ error: "Internal Server Error" });
+      }
+
+      if (results.affectedRows === 0) {
+        return res.status(404).json({ error: "Class not found" });
+      }
+
+      res.json({ message: `Successfully updated ${subject} for ${className}` });
+    });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+;

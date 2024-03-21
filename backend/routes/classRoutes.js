@@ -11,22 +11,18 @@ const {
   createClass,
   getSubjectsFromClas,
   removeSubjectFromClass,
+  updateClass
 } = require("../controllers/classController");
 router
   .get("/", isAuthenticatedUser, authorizeRoles("admin"), getClasses)
-  .post("/", createClass);
+  .post("/",isAuthenticatedUser, authorizeRoles("admin"), createClass);
 router
   .route("/subject")
   .get(isAuthenticatedUser, authorizeRoles("admin"), getSubjectsFromClas)
   .post(isAuthenticatedUser, authorizeRoles("admin"), addSubjectInClass)
   .delete(isAuthenticatedUser, authorizeRoles("admin"), removeSubjectFromClass);
 
-router
-  .route("/subject/delete")
-  .delete(
-    isAuthenticatedUser,
-    authorizeRoles("admin", "teacher"),
-    deleteSubjectFromClass
-  );
+  router.route("/update").post(isAuthenticatedUser, authorizeRoles("admin"), updateClass)
+
 
 module.exports = router;

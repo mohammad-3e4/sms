@@ -24,7 +24,7 @@ export const getClasses = createAsyncThunk(
 
 export const updateClasses = createAsyncThunk(
   "classes/updateClasses",
-  async ({ className, subject, act }, thunkAPI) => {
+  async ({ className, subject, action }, thunkAPI) => {
     try {
       // Your asynchronous logic to update classes here
       const response = await fetch(`/class/update`, {
@@ -32,7 +32,7 @@ export const updateClasses = createAsyncThunk(
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ className, subject, act }),
+        body: JSON.stringify({ className, subject, action }),
       });
 
       // Check if response status is in the 2xx range
