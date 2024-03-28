@@ -4,21 +4,16 @@ import { FaAngleDown, FaArrowsRotate, FaXmark, FaEye } from "react-icons/fa6";
 import ErrorAlert from "../../BaseFiles/ErrorAlert";
 import SuccessAlert from "../../BaseFiles/SuccessAlert";
 import { useEffect, useState } from "react";
- import TeacherClassesModal from "../../Component/staff/AssignTeacherModel";
+import TeacherClassesModal from "../../Component/staff/AssignTeacherModel";
 import { Link } from "react-router-dom";
-import {
-  clearErrors,
-  clearMessage,
-  getStaff,
-} from "../../redux/staffSlice";
+import { clearErrors, clearMessage, getStaff } from "../../redux/staffSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { IoSettingsOutline } from "react-icons/io5";
 import { RiArrowUpDownLine } from "react-icons/ri";
 
-
 const AssignTeacher = () => {
   const currentUrl = window.location.href;
-  const [selectedTeacher, setSelectedTeacher] = useState(null)
+  const [selectedTeacher, setSelectedTeacher] = useState(null);
   const { loading, error, message, staff } = useSelector(
     (state) => state.staff
   );
@@ -53,16 +48,16 @@ const AssignTeacher = () => {
     "Join Date",
   ];
 
-
   const handleRefresh = () => {
     setRotate(!rotate);
   };
 
-  const handleFilterByDate = () =>{
+  const handleFilterByDate = () => {};
 
-  }
-
-  console.log(selectedTeacher);
+  const closeModel = () => {
+    console.log("hii");
+    setSelectedTeacher(null);
+  };
 
   return (
     <section className="py-1  w-full m-auto">
@@ -71,7 +66,10 @@ const AssignTeacher = () => {
           {`${currentUrl.split("/")[3]}  ${currentUrl.split("/")[4]}`}
         </h6>
         <div className="w-1/2 flex gap-5 justify-end px-4 items-center">
-        <RiArrowUpDownLine className="w-4 h-4 cursor-pointer text-gray-700 hover:text-gray-500" onClick={handleFilterByDate}/>
+          <RiArrowUpDownLine
+            className="w-4 h-4 cursor-pointer text-gray-700 hover:text-gray-500"
+            onClick={handleFilterByDate}
+          />
           <FaAngleDown className="text-yellow-700 cursor-pointer" />
           <FaArrowsRotate
             className={`text-green-700 cursor-pointer ${
@@ -110,8 +108,7 @@ const AssignTeacher = () => {
                 ))}
 
                 <th scope="col" className="py-2 px-2 text-xs border-b-2">
-                  <div className="flex items-center">Actions  </div>
-                
+                  <div className="flex items-center">Actions </div>
                 </th>
               </tr>
             </thead>
@@ -152,13 +149,17 @@ const AssignTeacher = () => {
                       </td>
                       <td className="px-2 py-2">{member.gender}</td>
                       <td className="px-2 py-2">{member.designation}</td>
-                
-                
+
                       <td className="px-2 py-2">{member.email}</td>
                       <td className="px-2 py-2">{member.experience}</td>
-                      <td className="px-2 py-2">{new Date(member.joining_date).toLocaleDateString()}</td>
+                      <td className="px-2 py-2">
+                        {new Date(member.joining_date).toLocaleDateString()}
+                      </td>
                       <td className="px-2 py-4 flex gap-3 items-center ">
-                        <IoSettingsOutline className="text-green-700 w-5 h-5 cursor-pointer hover:text-green-400" onClick={()=>setSelectedTeacher(member)} />
+                        <IoSettingsOutline
+                          className="text-green-700 w-5 h-5 cursor-pointer hover:text-green-400"
+                          onClick={() => setSelectedTeacher(member)}
+                        />
                       </td>
                     </tr>
                   ))
@@ -166,22 +167,20 @@ const AssignTeacher = () => {
             </tbody>
           </table>
         )}
-        
- 
       </div>
-      {selectedTeacher && 
-      (
-        <TeacherClassesModal
-          // Allclasses={Allclasses}
-          selectedTeacher={selectedTeacher}
-          // data={jsonData}
-          // setJsonData={setJsonData}
-          // onClose={closeClassModal}
-          // teacherData={teacherData}
-          // selectedTeacherName={selectedTeacherName}
-        />
-      )
-    //  <h1>Hii</h1>
+      {
+        selectedTeacher && (
+          <TeacherClassesModal
+            // Allclasses={Allclasses}
+            selectedTeacher={selectedTeacher}
+            // data={jsonData}
+            // setJsonData={setJsonData}
+            onClose={closeModel}
+            // teacherData={teacherData}
+            // selectedTeacherName={selectedTeacherName}
+          />
+        )
+        //  <h1>Hii</h1>
       }
     </section>
   );

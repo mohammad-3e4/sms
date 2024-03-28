@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import { addStudentValues } from "../InitialValues";
 import { Link } from "react-router-dom";
+import Select from "../../BaseFiles/Select";
 import {
   clearErrors,
   clearMessage,
@@ -92,10 +93,12 @@ const AllStaff = () => {
   return (
     <section className="py-1  w-full m-auto">
       <div className="flex flex-wrap justify-between shadow bg-white py-2 mb-1">
-        <h6 className="text-gray-700 text-xl capitalize font-semibold font-sans px-4 tracking-wider w-1/2">
+        <h6 className="text-gray-700 text-xl capitalize font-semibold font-sans px-4 tracking-wider w-1/3">
           {`${currentUrl.split("/")[3]}  ${currentUrl.split("/")[4]}`}
         </h6>
-        <div className="w-1/2 flex gap-5 justify-end px-4 items-center">
+    
+        <div className="w-2/3 flex gap-5 justify-end px-4 items-center">
+          <Select/>
           <FaAngleDown className="text-yellow-700 cursor-pointer" />
           <FaArrowsRotate
             className={`text-green-700 cursor-pointer ${

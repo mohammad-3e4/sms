@@ -19,6 +19,7 @@ const AdminLogin = () => {
   const initialValues = {
     email: "",
     password: "",
+    tableName: "",
   };
   const validationSchema = Yup.object().shape({
     email: Yup.string().email("Incorrect email").required("Email is required"),
@@ -64,6 +65,33 @@ const AdminLogin = () => {
 
               <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
                 <form className="space-y-6" onSubmit={formik.handleSubmit}>
+                  <div>
+                    <div className="flex items-center justify-between ">
+                      <label
+                        htmlFor="tableName"
+                        className="block text-sm font-sans tracking-widest font-medium leading-6 text-gray-900 "
+                      >
+                        Log In as
+                      </label>
+                      <div className="text-sm"></div>
+                    </div>
+                    <div className="mt-2">
+                      <select
+                        id="tableName"
+                        name="tableName"
+                        value={formik.values.tableName}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        type="text"
+                        required
+                        className="block w-full tracking-widest font-sans px-3 rounded border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                      >
+                        <option value="Staff">Staff</option>
+                        <option value="students">Student</option>
+                      </select>
+                    </div>
+                
+                  </div>
                   <div>
                     <div className="flex items-center justify-between ">
                       <label

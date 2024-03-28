@@ -28,7 +28,7 @@ export const deleteSubjects = createAsyncThunk(
   "classes/deleteSubjects",
   async (deleteSubjects, thunkAPI) => {
     try {
-      const response = await fetch(`/class/subject/delete`, {
+      const response = await fetch(`/class/subject`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",

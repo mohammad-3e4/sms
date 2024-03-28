@@ -5,7 +5,6 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 export const loginUser = createAsyncThunk(
   "user/loginUser",
   async (values, thunkAPI) => {
-    
     try {
       // Your asynchronous logic to authenticate user here
       const response = await fetch("/auth/signin", {
@@ -29,6 +28,28 @@ export const loginUser = createAsyncThunk(
     }
   }
 );
+export const logoutUser = createAsyncThunk(
+  "user/logoutUser",
+  async (_, thunkAPI) => {
+    try {
+      localStorage.removeItem("user");
+
+      const response = await fetch("/auth/signout");
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message);
+      }
+
+      const data = await response.json();
+      console.log(data);
+      return data;
+    } catch (error) {
+      // Handle error
+      return thunkAPI.rejectWithValue({ error: error.message });
+    }
+  }
+);
 
 const initialState = {
   user: null,
@@ -40,10 +61,9 @@ const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
-    // Define any synchronous actions here if needed
-    clearErrors: (state)=>{
+    clearErrors: (state) => {
       state.error = null;
-    }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -58,7 +78,20 @@ const userSlice = createSlice({
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload.error; // Use error message from rejected action
+        state.error = action.payload.error; 
+      })
+      .addCase(logoutUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(logoutUser.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = null;
+        state.user = null;
+      })
+      .addCase(logoutUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload.error; 
       });
   },
 });

@@ -5,6 +5,10 @@ import { IoMdNotifications } from "react-icons/io";
 import { FaMessage } from "react-icons/fa6";
 import schoollogo from "../Static/basic/schoollogo.png";
 import { RxDividerVertical } from "react-icons/rx";
+import { useSelector, useDispatch } from "react-redux";
+import { logoutUser } from "../redux/userSlice";
+import { Link } from "react-router-dom";
+import React from "react";
 import {
   Typography,
   IconButton,
@@ -12,23 +16,24 @@ import {
   Input,
 } from "@material-tailwind/react";
 
-const user = {
+const oldUser = {
   name: "Tom Cook",
   email: "tom@example.com",
   imageUrl:
     "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
 };
 
-const userNavigation = [
-  { name: "Your Profile", href: "#" },
-  { name: "Sign out", href: "#" },
-];
-
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
 export default function NavbarMenu() {
+  const { user } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
+
+  const handleSignOut = () => {
+    dispatch(logoutUser());
+  };
   return (
     <>
       <Disclosure as="nav" className="w-full bg-white">
@@ -46,7 +51,7 @@ export default function NavbarMenu() {
                       />
                       <Typography
                         as="a"
-                        href="#"
+                        path="#"
                         variant="h6"
                         className=" cursor-pointer py-1.5"
                       >
@@ -92,10 +97,10 @@ export default function NavbarMenu() {
                       <div>
                         <Menu.Button className="relative flex max-w-xs items-center rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
                           <span className="absolute -inset-1.5" />
-                          <span className="sr-only">Open user menu</span>
+                          <span className="sr-only">Open oldUser menu</span>
                           <img
                             className="h-8 w-8 rounded-full"
-                            src={user.imageUrl}
+                            src={oldUser.imageUrl}
                             alt=""
                           />
                         </Menu.Button>
@@ -110,21 +115,33 @@ export default function NavbarMenu() {
                         leaveTo="transform opacity-0 scale-95"
                       >
                         <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                          {userNavigation.map((item) => (
-                            <Menu.Item key={item.name}>
+                          <Menu.Item>
+                            {({ active }) => (
+                              <Link
+                                to={`/staff/details/${user.staff_id}`}
+                                className={classNames(
+                                  active ? "bg-gray-100" : "",
+                                  "block px-4 py-2 text-sm text-gray-700"
+                                )}
+                              >
+                                {user.staff_name}
+                              </Link>
+                            )}
+                           
+                          </Menu.Item>
+                          <Menu.Item>
                               {({ active }) => (
-                                <a
-                                  href={item.href}
+                                <div
+                                  onClick={handleSignOut}
                                   className={classNames(
                                     active ? "bg-gray-100" : "",
-                                    "block px-4 py-2 text-sm text-gray-700"
+                                    "block px-4 py-2 text-sm text-gray-700 cursor-pointer"
                                   )}
                                 >
-                                  {item.name}
-                                </a>
+                                  Sign out
+                                </div>
                               )}
                             </Menu.Item>
-                          ))}
                         </Menu.Items>
                       </Transition>
                     </Menu>
@@ -142,7 +159,7 @@ export default function NavbarMenu() {
                     ) : (
                       <img
                         className="h-8 w-8 rounded-full"
-                        src={user.imageUrl}
+                        src={oldUser.imageUrl}
                         alt=""
                       />
                     )}
@@ -155,7 +172,7 @@ export default function NavbarMenu() {
               <div className="flex flex-wrap items-center justify-between gap-y-4">
                 <Typography
                   as="a"
-                  href="#"
+                  path="#"
                   variant="h6"
                   className="mr-4 ml-2 cursor-pointer py-1.5"
                 >
@@ -188,30 +205,37 @@ export default function NavbarMenu() {
                   <div className="flex-shrink-0">
                     <img
                       className="h-10 w-10 rounded-full"
-                      src={user.imageUrl}
+                      src={oldUser.imageUrl}
                       alt=""
                     />
                   </div>
                   <div className="ml-3">
                     <div className="text-base font-medium leading-none">
-                      {user.name}
+                      {oldUser.name}
                     </div>
                     <div className="text-sm font-medium leading-none">
-                      {user.email}
+                      {oldUser.email}
                     </div>
                   </div>
                 </div>
                 <div className="mt-3 space-y-1 px-2">
-                  {userNavigation.map((item) => (
+                  <React.Fragment>
                     <Disclosure.Button
-                      key={item.name}
                       as="a"
-                      href={item.href}
+                      href="\profile"
                       className="block rounded-md px-3 py-2 text-base font-medium hover:bg-gray-700 hover:text-white"
                     >
-                      {item.name}
+                      user
                     </Disclosure.Button>
-                  ))}
+
+                    <Disclosure.Button
+                      as="button"
+                      onClick={handleSignOut}
+                      className="block rounded-md px-3 py-2 text-base font-medium hover:bg-gray-700 hover:text-white"
+                    >
+                      Sign out
+                    </Disclosure.Button>
+                  </React.Fragment>
                 </div>
               </div>
             </Disclosure.Panel>

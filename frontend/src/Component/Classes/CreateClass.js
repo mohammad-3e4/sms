@@ -145,7 +145,7 @@ const CreateClass = () => {
         ) : (
           <div className="w-full  px-4 mx-auto mt-10 bg-white">
             <div className="flex-auto px-4 py-10 pt-0">
-              <form className="py-1">
+              <form className="py-1" onSubmit={formik.handleSubmit}>
                 <h6 className="text-gray-600   text-sm px-2 mt-3 mb-6 font-bold uppercase tracking-widest">
                   Class Information
                   <div className="h-1 bg-gray-700 w-16 my-3"></div>
@@ -389,18 +389,19 @@ const CreateClass = () => {
                 </div>
 
                 <hr className="mt-6 border-b-1 border-blueGray-300 py-1" />
-                <div className="px-2">
+              
+                <div className="px-2 flex justify-start">
                   <button
-                    onClick={handleDelSubjectSubmit}
-                    className="relative inline-flex items-center justify-start  overflow-hidden  uppercase text-xs px-4 py-2 rounded transition-all bg-red-500 font-semibold group"
+                    className="bg-amber-500 text-white active:bg-yellow-700 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 ease-linear transition-all duration-150"
+                    type="submit"
                   >
-                    <span className="absolute top-0 right-0 inline-block w-4 h-4 transition-all duration-500 ease-in-out bg-red-700 rounded group-hover:-mr-4 group-hover:-mt-4">
-                      <span className="absolute top-0 right-0 w-5 h-5 rotate-45 translate-x-1/2 -translate-y-1/2 bg-white"></span>
-                    </span>
-                    <span className="absolute bottom-0 left-0 w-full h-full transition-all duration-500 ease-in-out delay-200 -translate-x-full translate-y-full bg-red-600 rounded-2xl group-hover:mb-12 group-hover:translate-x-0"></span>
-                    <span className="relative w-full text-left text-white transition-colors duration-200 ease-in-out group-hover:text-white">
-                      Delete Subject
-                    </span>
+                    Submit
+                  </button>
+                  <button
+                    className="bg-red-500 text-white active:bg-red-700 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 ease-linear transition-all duration-150"
+                    onClick={handleDelSubjectSubmit}
+                  >
+                    Delete Subject
                   </button>
                 </div>
               </form>

@@ -37,7 +37,7 @@ export const getStudents = createAsyncThunk(
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message);
+        throw new Error(errorData.message || errorData.error);
       }
 
       const data = await response.json();
@@ -104,7 +104,7 @@ export const updateStudent = createAsyncThunk(
 
 export const getStudentById = createAsyncThunk(
   "student/getStudent",
-  async ( studentId, thunkAPI) => {
+  async (studentId, thunkAPI) => {
     try {
       // Your asynchronous logic to update student her
       const response = await fetch(`/student/${studentId}`);
@@ -114,7 +114,7 @@ export const getStudentById = createAsyncThunk(
       }
 
       const data = await response.json();
-      console.log(data);
+
       return data;
     } catch (error) {
       // Handle error

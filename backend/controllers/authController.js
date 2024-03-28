@@ -8,8 +8,11 @@ const db = require("../config/database");
 dotenv.config({ path: "backend/config/config.env" });
 
 exports.signin = catchAsyncErrors(async (request, response, next) => {
-  const { email, password } = request.body;
-  const sql = "SELECT * FROM staff WHERE email=? AND password=?;";
+  const { email, password, tableName } = request.body;
+
+  const table = tableName || "staff";
+
+  const sql = `SELECT * FROM ${table} WHERE email=? AND password=?;`;
 
   db.query(sql, [email, password], (err, result) => {
     if (err) {
@@ -21,14 +24,15 @@ exports.signin = catchAsyncErrors(async (request, response, next) => {
       const user = result[0];
       sendToken(user, 201, response);
     } else {
-      // If no user found with the provided credentials, respond with a 404 error
-      return response.status(404).json({ message: "User not found with provided credentials" });
+      return response
+        .status(404)
+        .json({ message: "User not found with provided credentials" });
     }
   });
 });
 
 //  Log Out User
-exports.logoutUser = catchAsyncErrors(async (request, response, next) => {
+exports.signout = catchAsyncErrors(async (request, response, next) => {
   response.cookie("token", null, {
     expires: new Date(Date.now()),
     httpOnly: true,

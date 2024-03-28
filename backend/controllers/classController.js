@@ -235,4 +235,61 @@ exports.updateClass = catchAsyncErrors(async (req, res, next) => {
   }
 });
 
-;
+exports.assignSubject = catchAsyncErrors(async (req, res, next) => {
+  try {
+    const {teacher_id, class_name, subject} = req.body;
+
+    const updateQuery = `
+      UPDATE classes
+      SET ${subject} = ?
+      WHERE class_name = ?;
+    `;
+
+    db.query(updateQuery, [teacher_id, class_name], (err, results) => {
+      if (err) {
+        console.error("Error updating subject value:", err);
+        return res.status(500).json({ error: "Internal Server Error" });
+      }
+
+      if (results.affectedRows === 0) {
+        return res.status(404).json({ error: "Class not found" });
+      }
+
+      res.json({ message: `Successfully updated ${subject} for ${class_name}` });
+    });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+
+exports.removeAssignSubject = catchAsyncErrors(async (req, res, next) => {
+  try {
+    const { class_name, subject} = req.body;
+
+    const updateQuery = `
+      UPDATE classes
+      SET ${subject} = ?
+      WHERE class_name = ?;
+    `;
+
+    db.query(updateQuery, ['yes', class_name], (err, results) => {
+      if (err) {
+        console.error("Error updating subject value:", err);
+        return res.status(500).json({ error: "Internal Server Error" });
+      }
+
+      if (results.affectedRows === 0) {
+        return res.status(404).json({ error: "Class not found" });
+      }
+
+      res.json({ message: `Successfully updated ${subject} for ${class_name}` });
+    });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+

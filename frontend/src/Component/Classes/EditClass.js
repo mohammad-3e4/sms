@@ -48,7 +48,7 @@ export default function EditClass() {
     }
   }, [dispatch, error, message]);
 
-  const handleAssignClass = async (className, subject, action) => {
+  const handleSubjectClass = async (className, subject, action) => {
     dispatch(updateClasses({ className, subject, action }));
   };
 
@@ -157,7 +157,7 @@ export default function EditClass() {
                                       <div
                                         className="flex justify-between py-2 items-center cursor-pointer"
                                         onClick={() =>
-                                          handleAssignClass(
+                                          handleSubjectClass(
                                             classData.class_name,
                                             subject,
                                             "remove"
@@ -177,7 +177,7 @@ export default function EditClass() {
                                       <div
                                         className="flex justify-between py-2 items-center cursor-pointer"
                                         onClick={() =>
-                                          handleAssignClass(
+                                          handleSubjectClass(
                                             classData.class_name,
                                             subject,
                                             "add"

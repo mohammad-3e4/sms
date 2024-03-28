@@ -15,7 +15,7 @@ exports.isAuthenticatedUser = async (request, response, next) => {
 
       return next(
         new ErrorHandler("Login first to access this resource!", 401)
-      ); // Unauthorized
+      ); 
     }
 
     let decode;
@@ -47,16 +47,15 @@ exports.isAuthenticatedUser = async (request, response, next) => {
 exports.authorizeRoles = function (...roles) {
   return (req, res, next) => {
     if (!roles.includes(req.user.role)) {
-      return next(
-        new ErrorHandler(
-          `Role (${req.user.role}) is not allowed to access this resource`,
-          403
-        )
-      );
+      return res.status(403).json({
+        error: `Role (${req.user.role}) is not allowed to access this resource`
+      });
     }
-    next();
+    next(); 
   };
 };
+
+
 exports.protect = asyncHandler(async (req, res, next) => {
   let token;
   if (
