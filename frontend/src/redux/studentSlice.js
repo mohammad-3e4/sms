@@ -16,12 +16,14 @@ export const addStudent = createAsyncThunk(
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message);
+        console.log(errorData);
+        throw new Error(errorData.error);
       }
 
       const data = await response.json();
       return data;
     } catch (error) {
+      console.log(error);
       // Handle error
       return thunkAPI.rejectWithValue({ error: error.message });
     }
@@ -31,9 +33,9 @@ export const addStudent = createAsyncThunk(
 // Example asynchronous thunk to get students
 export const getStudents = createAsyncThunk(
   "student/getStudents",
-  async (_, thunkAPI) => {
+  async (classValue, thunkAPI) => {
     try {
-      const response = await fetch("/student");
+      const response = await fetch(`/student?class=${classValue}`);
 
       if (!response.ok) {
         const errorData = await response.json();

@@ -4,10 +4,14 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
  
 export const getClasses = createAsyncThunk(
   "classes/getClasses",
-  async (_, thunkAPI) => {
+  async (classValue, thunkAPI) => {
     try {
-
-      const response = await fetch(`/class`);
+      let response
+      if(classValue){
+        response = await fetch(`/class?class=${classValue}`);
+      }else{
+        response = await fetch(`/class`);
+      }
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message);
@@ -16,11 +20,11 @@ export const getClasses = createAsyncThunk(
       const data = await response.json();
       return data;
     } catch (error) {
- 
       return thunkAPI.rejectWithValue({ error: error.message });
     }
   }
 );
+
 
 export const updateClasses = createAsyncThunk(
   "classes/updateClasses",
@@ -137,6 +141,7 @@ const initialState = {
   loading: false,
   error: null,
   message: null,
+  selectedClass: null,
 };
 
 const classSlice = createSlice({
@@ -148,6 +153,9 @@ const classSlice = createSlice({
     },
     clearError: (state) => {
       state.error = null;
+    },
+    setClass: (state, action) => {
+      state.selectedClass = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -220,5 +228,5 @@ const classSlice = createSlice({
   },
 });
 
-export const { clearError, clearMessages } = classSlice.actions;
+export const { clearError, clearMessages, setClass } = classSlice.actions;
 export default classSlice.reducer;

@@ -16,6 +16,7 @@ import SuccessAlert from "../../BaseFiles/SuccessAlert";
 function AssignTeacherModel({ selectedTeacher, onClose }) {
   const [selectedClass, setSelectedClass] = useState("");
   const [selectedSection, setSelectedSection] = useState("");
+  const [active, setActive] = useState();
   const { loading, error, message, classes } = useSelector(
     (state) => state.classes
   );
@@ -40,8 +41,9 @@ function AssignTeacherModel({ selectedTeacher, onClose }) {
     }
   }, [dispatch, error, message]);
 
-  const handleClassClick = (classData) => {
+  const handleClassClick = (classData, index) => {
     setSelectedClass(classData);
+    setActive(index);
   };
 
   const handleRemoveClick = async (subject) => {
@@ -58,7 +60,6 @@ function AssignTeacherModel({ selectedTeacher, onClose }) {
         subject: subject,
       })
     );
-
   };
   const handleRemoveSubjectClass = async (subject) => {
     dispatch(
@@ -67,7 +68,6 @@ function AssignTeacherModel({ selectedTeacher, onClose }) {
         subject: subject,
       })
     );
-
   };
 
   return (
@@ -114,10 +114,12 @@ function AssignTeacherModel({ selectedTeacher, onClose }) {
             <div className="p-4 md:p-5 space-y-4 flex justify-between">
               <div className="w-1/4 pr-4 mb-4 lg:mb-0 text-center lg:text-center">
                 <ul className="text-sm font-medium text-white bg-[#233459] border border-gray-200 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                  {classes?.map((classData) => (
+                  {classes?.map((classData, index) => (
                     <li
                       key={classData.class_name}
                       className={`block w-full tracking-widest font-sans px-4 py-2 border-b border-gray-200 cursor-pointer ${
+                        active === index && "bg-[#3469a1]"
+                      } ${
                         selectedClass === classData.class_name &&
                         selectedSection === classData.section
                           ? "bg-[#eab308] text-white focus:bg-gray-100 focus:text-blue-700"
@@ -129,7 +131,7 @@ function AssignTeacherModel({ selectedTeacher, onClose }) {
                           : undefined
                       }
                       onClick={() => {
-                        handleClassClick(classData);
+                        handleClassClick(classData, index);
                       }}
                     >
                       {" "}

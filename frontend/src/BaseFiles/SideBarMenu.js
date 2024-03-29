@@ -7,8 +7,7 @@ import { GiTeacher } from "react-icons/gi";
 import { LiaSchoolSolid } from "react-icons/lia";
 import { BiLibrary } from "react-icons/bi";
 import { Link } from "react-router-dom";
-import { useSelector , useDispatch } from "react-redux";
-
+import { useSelector, useDispatch } from "react-redux";
 
 const SidebarMenu = ({ toggleSidebar }) => {
   const [collapsed, setCollapsed] = useState(false);
@@ -21,15 +20,12 @@ const SidebarMenu = ({ toggleSidebar }) => {
     toggleSidebar();
   };
 
-  useEffect(() => {
-
-  }, []);
+  useEffect(() => { }, []);
 
   return (
     <div
-      className={`sidebar-wrapper ${
-        collapsed && isMobile ? "collapsed" : ""
-      } fixed h-full overflow-y-auto z-10`}
+      className={`sidebar-wrapper ${collapsed && isMobile ? "collapsed" : ""
+        } fixed h-full overflow-y-auto z-10`}
     >
       <Sidebar
         collapsed={collapsed}
@@ -47,9 +43,8 @@ const SidebarMenu = ({ toggleSidebar }) => {
           )}
           {(!isMobile || (isMobile && !collapsed)) && (
             <div
-              className={`company-name ${
-                companyNameVisible ? "hidden" : ""
-              } py-2`}
+              className={`company-name ${companyNameVisible ? "hidden" : ""
+                } py-2`}
             >
               Skyway Technologies
             </div>
@@ -87,11 +82,11 @@ const SidebarMenu = ({ toggleSidebar }) => {
               icon={<PiStudentBold className="text-yellow-600" />}
             >
               <Link to={`/all/students`}>
-                <MenuItem>Students</MenuItem>
+                <MenuItem>All Students</MenuItem>
               </Link>
 
               <Link to="/student/create">
-                <MenuItem>Admission Student</MenuItem>
+                <MenuItem>Admint Form</MenuItem>
               </Link>
               <MenuItem>Student Promotion</MenuItem>
             </SubMenu>
@@ -103,7 +98,7 @@ const SidebarMenu = ({ toggleSidebar }) => {
                   icon={<GiTeacher className="text-yellow-600" />}
                 >
                   <Link to={`/all/staff`}>
-                    <MenuItem>Staff</MenuItem>
+                    <MenuItem>All Staff</MenuItem>
                   </Link>
                   <Link to={`/teacher/assign`}>
                     <MenuItem>Assign Teacher</MenuItem>
@@ -126,6 +121,7 @@ const SidebarMenu = ({ toggleSidebar }) => {
                   </Link>
                 </SubMenu>
                 <hr />
+
                 <SubMenu
                   label="Library"
                   icon={<BiLibrary className="text-yellow-600" />}
@@ -136,10 +132,6 @@ const SidebarMenu = ({ toggleSidebar }) => {
                   <MenuItem>Add New Book</MenuItem>
                 </SubMenu>
                 <hr />
-              </>
-            )}
-            {user.role === "teacher" && (
-              <>
                 <SubMenu
                   label="Classes"
                   icon={<LiaSchoolSolid className="text-yellow-600" />}
@@ -154,6 +146,18 @@ const SidebarMenu = ({ toggleSidebar }) => {
                 <hr />
               </>
             )}
+            <SubMenu
+              label="Attendance"
+              icon={<LiaSchoolSolid className="text-yellow-600" />}
+            >
+              <Link to="/students/attendance">
+                <MenuItem>Students Attendance</MenuItem>
+              </Link>
+              <Link to="/staff/attendance">
+                <MenuItem>Staff Attendance</MenuItem>
+              </Link>
+            </SubMenu>
+            <hr />
 
             <SubMenu
               label="Result"

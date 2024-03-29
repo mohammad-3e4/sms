@@ -5,6 +5,7 @@ import ErrorAlert from "../../BaseFiles/ErrorAlert";
 import SuccessAlert from "../../BaseFiles/SuccessAlert";
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 import {
   clearErrors,
@@ -16,6 +17,7 @@ import { useParams } from "react-router-dom";
 const Details = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [rotate, setRotate] = useState(false);
   const { loading, error, message, student } = useSelector(
     (state) => state.student
@@ -60,7 +62,7 @@ const Details = () => {
             }`}
             onClick={handleRefresh}
           />
-          <FaXmark className="text-red-700 cursor-pointer" />
+          <FaXmark className="text-red-700 cursor-pointer"  onClick={()=>navigate('/all/students')}/>
         </div>
       </div>
       {message && <SuccessAlert message={message} />}

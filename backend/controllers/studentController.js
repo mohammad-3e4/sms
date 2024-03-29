@@ -65,30 +65,14 @@ exports.getStudent = asyncHandler(async (req, res, next) => {
 
 exports.getStudents = asyncHandler(async (req, res, next) => {
   let sql = "SELECT * FROM students";
-
-  const { class: studentClass, section } = req.query;
-
-  if (studentClass && section) {
-    sql += ` WHERE class_name = ? AND section = ?`;
-    db.query(sql, [studentClass, section], (err, result) => {
-      if (err) {
-        console.error("Error during retrieval:", err);
-        return next(new ErrorHandler("Error during retrieval", 500));
-      }
-      res.status(200).json({ success: true, students: result });
-    });
-  } else if (studentClass) {
-    sql += ` WHERE class_name = ?`;
-    db.query(sql, [studentClass], (err, result) => {
-      if (err) {
-        console.error("Error during retrieval:", err);
-        return next(new ErrorHandler("Error during retrieval", 500));
-      }
-      res.status(200).json({ success: true, students: result });
-    });
-  } else if (section) {
-    sql += ` WHERE section = ?`;
-    db.query(sql, [section], (err, result) => {
+ 
+  const { class: studentClass } = req.query;
+  const clas = studentClass.split('-')[0];
+  const section = studentClass.split('-')[1];
+  
+  if (studentClass) {
+    sql += ` WHERE class_name = ? AND section =  ?;`;
+    db.query(sql, [clas, section], (err, result) => {
       if (err) {
         console.error("Error during retrieval:", err);
         return next(new ErrorHandler("Error during retrieval", 500));
@@ -96,6 +80,7 @@ exports.getStudents = asyncHandler(async (req, res, next) => {
       res.status(200).json({ success: true, students: result });
     });
   } else {
+    console.log("hii");
     db.query(sql, (err, result) => {
       if (err) {
         console.error("Error during retrieval:", err);
@@ -132,7 +117,7 @@ exports.updateStudent = asyncHandler(async (req, res, next) => {
 
 exports.deleteStudent = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
- 
+
   if (!id) {
     return next(new ErrorHandler("Admission number (id) is required", 400));
   }

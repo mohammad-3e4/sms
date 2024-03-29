@@ -44,8 +44,8 @@ app.post("/api/v1/student",isAuthenticatedUser, authorizeRoles('admin'),  async 
       message: `Student created successfully`,
     });
   } catch (error) {
-    console.error("Error creating student bio-data:", error);
-    res.status(500).json({ success: false, error: error });
+    console.error("Error creating student bio-data:", error.message);
+    res.status(500).json({ success: false, error: error.message });
   }
 });
 

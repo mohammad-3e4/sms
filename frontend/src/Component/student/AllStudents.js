@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import { addStudentValues } from "../InitialValues";
 import { Link } from "react-router-dom";
+import { FaSearch } from "react-icons/fa";
 import Select from "../../BaseFiles/Select";
 import {
   clearErrors,
@@ -22,16 +23,20 @@ import { FaRegTrashAlt, FaCheck } from "react-icons/fa";
 const AllStaff = () => {
   const currentUrl = window.location.href;
   const [editMode, setEditMode] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const [editableStudent, setEditableStudent] = useState(null);
   const { loading, error, message, students } = useSelector(
     (state) => state.student
   );
+  const [allStudents, setAllStudents] = useState([]);
+  const { selectedClass } = useSelector((state) => state.classes);
 
   const dispatch = useDispatch();
   const [rotate, setRotate] = useState(false);
 
   useEffect(() => {
-    dispatch(getStudents());
+    setAllStudents(students);
+    dispatch(getStudents(selectedClass));
     if (error) {
       const errorInterval = setInterval(() => {
         dispatch(clearErrors());
@@ -46,7 +51,7 @@ const AllStaff = () => {
       }, 3000);
       return () => clearInterval(messageInterval);
     }
-  }, [dispatch, error, message]);
+  }, [dispatch, error, message, selectedClass]);
 
   const thds = [
     "Roll No",
@@ -89,6 +94,14 @@ const AllStaff = () => {
       );
     },
   });
+  const handleSearch = (e) => {
+    setAllStudents(
+      students.filter((student) =>
+        student.student_name.includes(e.target.value)
+      )
+    );
+    setSearchQuery(e.target.value);
+  };
 
   return (
     <section className="py-1  w-full m-auto">
@@ -96,9 +109,30 @@ const AllStaff = () => {
         <h6 className="text-gray-700 text-xl capitalize font-semibold font-sans px-4 tracking-wider w-1/3">
           {`${currentUrl.split("/")[3]}  ${currentUrl.split("/")[4]}`}
         </h6>
-    
-        <div className="w-2/3 flex gap-5 justify-end px-4 items-center">
-          <Select/>
+
+        <div className="w-2/3 flex gap-2 justify-end px-4 items-center">
+          <Select subject={false} search={true} />
+
+          <div className="w-full px-2">
+            <div className="relative w-full">
+              <input
+                id="search"
+                name="search"
+                placeholder="search..."
+                value={searchQuery}
+                onInput={(e) => handleSearch(e)}
+                type="text"
+                className={`border-0 px-3 py-2 placeholder-blueGray-300  focus:bg-white text-gray-600  bg-gray-200 rounded-sm text-sm shadow focus:outline-none  w-full ease-linear transition-all duration-150 border-red-500`}
+              />
+              <span className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5 text-gray-600 cursor-pointer">
+                <FaSearch
+                  className="h-4 w-4 text-gray-600"
+                  aria-hidden="true"
+                />
+              </span>
+            </div>
+          </div>
+
           <FaAngleDown className="text-yellow-700 cursor-pointer" />
           <FaArrowsRotate
             className={`text-green-700 cursor-pointer ${

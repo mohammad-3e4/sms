@@ -9,7 +9,6 @@ export default function Layout({ children }) {
   const toggleSidebar = () => {
     setSidebarCollapsed(!sidebarCollapsed);
   };
-  console.log(currentUrl.split("/")[2]);
   return (
     <>
       <div className="flex h-full overflow-hidden">
@@ -23,8 +22,8 @@ export default function Layout({ children }) {
         </aside>
         <div className="flex flex-col w-full h-screen">
           <NavbarMenu />
-          <div className="flex flex-col flex-grow">
-            <div className="bg-[#e2e8f0]-200 p-4 flex-grow overflow-auto">
+          <div className="flex flex-col flex-grow ">
+            <div className="bg-[#e2e8f0]-200 p-4 flex-grow overflow-auto ">
               <p className="text-xs font-sans capitalize tracking-widest py-3  text-gray-500">
                 Home - {`${currentUrl.split("/")[3]} / ${currentUrl.split("/")[4]}`}
               </p>
