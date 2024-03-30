@@ -51,6 +51,26 @@ export const getStudents = createAsyncThunk(
     }
   }
 );
+export const getAbsents = createAsyncThunk(
+  "student/Absensts",
+  async (classValue, thunkAPI) => {
+    try {
+      const response = await fetch(`/student/absents`);
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || errorData.error);
+      }
+
+      const data = await response.json();
+
+      return data;
+    } catch (error) {
+      // Handle error
+      return thunkAPI.rejectWithValue({ error: error.message });
+    }
+  }
+);
 
 // Example asynchronous thunk to delete student
 export const deleteStudent = createAsyncThunk(
@@ -124,6 +144,36 @@ export const getStudentById = createAsyncThunk(
     }
   }
 );
+export const toggleAttendance = createAsyncThunk(
+  'student/toggleAttendance',
+  async ({ studentId, day }) => {
+    try {
+      const requestBody = {
+        student_id: studentId,
+        attendance: day,
+      };
+
+      const response = await fetch('/student/attendance', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      if (response.ok) {
+       const data = await response.json();
+  
+        return data;
+      } else {
+        const error = await response.json();
+        throw new Error(error.message);
+      }
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+);
 
 const initialState = {
   students: null,
@@ -131,6 +181,7 @@ const initialState = {
   error: null,
   message: null,
   student: null,
+  absents: null
 };
 
 const studentSlice = createSlice({
@@ -208,6 +259,30 @@ const studentSlice = createSlice({
         state.student = action.payload.student; // Assuming payload contains a single student object
       })
       .addCase(getStudentById.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload.error;
+      }).addCase(getAbsents.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getAbsents.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = null;
+        state.absents = action.payload.absents; 
+      })
+      .addCase(getAbsents.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload.error;
+      }).addCase(toggleAttendance.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(toggleAttendance.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = null;
+        state.message = action.payload.message; 
+      })
+      .addCase(toggleAttendance.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload.error;
       });

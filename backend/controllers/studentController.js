@@ -65,11 +65,11 @@ exports.getStudent = asyncHandler(async (req, res, next) => {
 
 exports.getStudents = asyncHandler(async (req, res, next) => {
   let sql = "SELECT * FROM students";
- 
+
   const { class: studentClass } = req.query;
-  const clas = studentClass.split('-')[0];
-  const section = studentClass.split('-')[1];
-  
+  const clas = studentClass.split("-")[0];
+  const section = studentClass.split("-")[1];
+
   if (studentClass) {
     sql += ` WHERE class_name = ? AND section =  ?;`;
     db.query(sql, [clas, section], (err, result) => {
@@ -80,7 +80,6 @@ exports.getStudents = asyncHandler(async (req, res, next) => {
       res.status(200).json({ success: true, students: result });
     });
   } else {
-    console.log("hii");
     db.query(sql, (err, result) => {
       if (err) {
         console.error("Error during retrieval:", err);
@@ -136,6 +135,53 @@ exports.deleteStudent = asyncHandler(async (req, res, next) => {
       return next(
         new ErrorHandler("Student not found or no changes applied", 404)
       );
+    }
+  });
+});
+
+exports.markAbsentStudent = asyncHandler(async (req, res, next) => {
+  const { student_id, attendance } = req.body;
+  if (!student_id) {
+    return next(
+      new ErrorHandler(`Student Id (${student_id}) is required`, 400)
+    );
+  }
+
+  const sql = `INSERT INTO attendance (student_id, abesent_date) VALUES (?, ?)`;
+  const values = [student_id, attendance];
+
+  db.query(sql, values, (err, result) => {
+    if (err) {
+      console.error("Error during insert:", err);
+      return next(new ErrorHandler("Error during insert", 500));
+    }
+
+    if (result.affectedRows > 0) {
+      res
+        .status(200)
+        .json({ success: true, message: "Absent record inserted successfully" });
+    } else {
+      return next(
+        new ErrorHandler("Failed to insert absent record", 500)
+      );
+    }
+  });
+});
+
+exports.getAbsents = asyncHandler(async (req, res, next) => {
+
+  const sql = "SELECT * FROM attendance;";
+
+  db.query(sql, (err, result) => {
+    if (err) {
+      console.error("Error during retrieval:", err);
+      return next(new ErrorHandler("Error during retrieval", 500));
+    }
+
+    if (result.length > 0) {
+      res.status(200).json({ success: true, absents: result });
+    } else {
+      return next(new ErrorHandler("Student not found", 404));
     }
   });
 });
