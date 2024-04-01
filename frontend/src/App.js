@@ -18,6 +18,7 @@ import AssignTeacher from "./Component/staff/AssignTeacher";
 import CreateClass from "./Component/Classes/CreateClass";
 import EditClass from "./Component/Classes/EditClass";
 import Attendance from "./Component/student/Attendance";
+import StaffAttendance from "./Component/staff/Attendance";
 function App() {
   return (
     <Router>
@@ -109,6 +110,14 @@ function App() {
             element={
               <Layout>
                 <Attendance />
+              </Layout>
+            }
+          />
+          <Route
+            path="/staff/attendance"
+            element={
+              <Layout>
+                <StaffAttendance />
               </Layout>
             }
           />

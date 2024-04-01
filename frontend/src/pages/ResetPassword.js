@@ -1,18 +1,22 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import loginpageimg from "../Static/basic/loginpageimg.jpg";
 import { useFormik } from "formik";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import * as Yup from "yup";
-import axios from "axios";
+import ErrorAlert from "../BaseFiles/ErrorAlert";
+import SuccessAlert from "../BaseFiles/SuccessAlert";
+import { resetPassword, clearErrors, clearMessage } from "../redux/userSlice";
+import { useSelector, useDispatch } from "react-redux";
+
 // import {URL} from '../URL'
 const ResetPassword = () => {
   const navigate = useNavigate();
   const { token } = useParams();
-  const [message, setMessage] = useState("");
-  const [userError, setUserError] = useState("");
+  const dispatch = useDispatch();
   const [showPass, setShowPass] = useState(false);
+  const { message, error, loading } = useSelector((state) => state.user);
 
   const initialValues = {
     newPassword: "",
@@ -23,19 +27,24 @@ const ResetPassword = () => {
     confirmPassword: Yup.string().required("Confirm Password is required"),
   });
 
+  useEffect(() => {
+    if (error) {
+      setTimeout(() => {
+        dispatch(clearErrors());
+      }, 3000);
+    }
+    if (message) {
+      setTimeout(() => {
+        navigate("/");
+      }, 3000);
+    }
+  }, [error, message, loading]);
   const formik = useFormik({
     initialValues,
     validationSchema: validationSchema,
     onSubmit: async (values) => {
-      try {
-        // const response = await axios.post(`${URL}/admin/reset-password/${token}`, values);
-        // setMessage(response.data.message)
-        // setTimeout(() => {
-        //   navigate('/login');
-        // }, 2000);
-      } catch (error) {
-        setUserError("User not found");
-      }
+      console.log(values);
+      dispatch(resetPassword({ newPassword: values.newPassword, token }));
     },
   });
 
@@ -50,126 +59,121 @@ const ResetPassword = () => {
                   Reset Password
                 </h2>
               </div>
-              {message ? (
-                <div className="bg-green-100 text-green-900 p-3 rounded-md my-5 text-center ">
-                  {message}
-                </div>
-              ) : (
-                <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-                  <form className="space-y-6" onSubmit={formik.handleSubmit}>
-                    <div>
-                      <div className="flex items-center justify-between">
-                        <label
-                          htmlFor="newPassword"
-                          className="block text-sm font-sans tracking-widest font-medium leading-6 text-gray-900 "
-                        >
-                          New Password
-                        </label>
-                      </div>
-                      <div className="mt-2 relative">
-                        <input
-                          id="newPassword"
-                          name="newPassword"
-                          value={formik.values.newPassword}
-                          onChange={formik.handleChange}
-                          onBlur={formik.handleBlur}
-                          type={showPass ? "text" : "password"}
-                          autoComplete="current-password"
-                          required
-                          className="block w-full font-sans tracking-widest rounded px-3 border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                        />
-                        <span
-                          onClick={() => setShowPass(!showPass)}
-                          className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5 text-gray-600 cursor-pointer"
-                        >
-                          {!showPass ? (
-                            <FaRegEye
-                              className="h-6 w-6 text-gray-600"
-                              aria-hidden="true"
-                            />
-                          ) : (
-                            <FaRegEyeSlash
-                              className="h-6 w-6 text-gray-600"
-                              aria-hidden="true"
-                            />
-                          )}
-                        </span>
-                      </div>
-                      {formik.touched.newPassword &&
-                        formik.errors.newPassword && (
-                          <p className="text-red-500 tracking-widest text-xs mt-2 text-left">
-                            {formik.errors.newPassword}
-                          </p>
-                        )}
-                    </div>
-
-                    <div>
-                      <div className="flex items-center justify-between">
-                        <label
-                          htmlFor="confirmPassword"
-                          className="block text-sm font-sans tracking-widest font-medium leading-6 text-gray-900 "
-                        >
-                          Confirm Password
-                        </label>
-                      </div>
-                      <div className="mt-2 relative">
-                        <input
-                          id="confirmPassword"
-                          name="confirmPassword"
-                          value={formik.values.confirmPassword}
-                          onChange={formik.handleChange}
-                          onBlur={formik.handleBlur}
-                          type={showPass ? "text" : "password"}
-                          autoComplete="current-password"
-                          required
-                          className="block w-full font-sans tracking-widest rounded px-3 border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                        />
-                        <span
-                          onClick={() => setShowPass(!showPass)}
-                          className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5 text-gray-600 cursor-pointer"
-                        >
-                          {!showPass ? (
-                            <FaRegEye
-                              className="h-6 w-6 text-gray-600"
-                              aria-hidden="true"
-                            />
-                          ) : (
-                            <FaRegEyeSlash
-                              className="h-6 w-6 text-gray-600"
-                              aria-hidden="true"
-                            />
-                          )}
-                        </span>
-                      </div>
-                      {formik.touched.confirmPassword &&
-                        formik.errors.confirmPassword && (
-                          <p className="text-red-500 tracking-widest text-xs mt-2 text-left">
-                            {formik.errors.confirmPassword}
-                          </p>
-                        )}
-                    </div>
-                    {userError && <p style={{ color: "red" }}>{userError}</p>}
-                    <div>
-                      <button
-                        type="submit"
-                        className="flex w-full justify-center font-sans tracking-widest uppercase rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              {message && <SuccessAlert message={message} />}
+              {error && <ErrorAlert error={error} />}
+              <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+                <form className="space-y-6" onSubmit={formik.handleSubmit}>
+                  <div>
+                    <div className="flex items-center justify-between">
+                      <label
+                        htmlFor="newPassword"
+                        className="block text-sm font-sans tracking-widest font-medium leading-6 text-gray-900 "
                       >
-                        Reset Password
-                      </button>
+                        New Password
+                      </label>
                     </div>
-                  </form>
+                    <div className="mt-2 relative">
+                      <input
+                        id="newPassword"
+                        name="newPassword"
+                        value={formik.values.newPassword}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        type={showPass ? "text" : "password"}
+                        autoComplete="current-password"
+                        required
+                        className="block w-full font-sans tracking-widest rounded px-3 border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                      />
+                      <span
+                        onClick={() => setShowPass(!showPass)}
+                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5 text-gray-600 cursor-pointer"
+                      >
+                        {!showPass ? (
+                          <FaRegEye
+                            className="h-6 w-6 text-gray-600"
+                            aria-hidden="true"
+                          />
+                        ) : (
+                          <FaRegEyeSlash
+                            className="h-6 w-6 text-gray-600"
+                            aria-hidden="true"
+                          />
+                        )}
+                      </span>
+                    </div>
+                    {formik.touched.newPassword &&
+                      formik.errors.newPassword && (
+                        <p className="text-red-500 tracking-widest text-xs mt-2 text-left">
+                          {formik.errors.newPassword}
+                        </p>
+                      )}
+                  </div>
 
-                  <p className="mt-10  text-sm text-gray-500 ">
-                  
-                    <Link
-                      to="/"
-                      className="font-semibold leading-6 font-sans tracking-widest text-indigo-600 hover:text-indigo-500"
+                  <div>
+                    <div className="flex items-center justify-between">
+                      <label
+                        htmlFor="confirmPassword"
+                        className="block text-sm font-sans tracking-widest font-medium leading-6 text-gray-900 "
+                      >
+                        Confirm Password
+                      </label>
+                    </div>
+                    <div className="mt-2 relative">
+                      <input
+                        id="confirmPassword"
+                        name="confirmPassword"
+                        value={formik.values.confirmPassword}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        type={showPass ? "text" : "password"}
+                        autoComplete="current-password"
+                        required
+                        className="block w-full font-sans tracking-widest rounded px-3 border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                      />
+                      <span
+                        onClick={() => setShowPass(!showPass)}
+                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5 text-gray-600 cursor-pointer"
+                      >
+                        {!showPass ? (
+                          <FaRegEye
+                            className="h-6 w-6 text-gray-600"
+                            aria-hidden="true"
+                          />
+                        ) : (
+                          <FaRegEyeSlash
+                            className="h-6 w-6 text-gray-600"
+                            aria-hidden="true"
+                          />
+                        )}
+                      </span>
+                    </div>
+                    {formik.touched.confirmPassword &&
+                      formik.errors.confirmPassword && (
+                        <p className="text-red-500 tracking-widest text-xs mt-2 text-left">
+                          {formik.errors.confirmPassword}
+                        </p>
+                      )}
+                  </div>
+        
+                  <div>
+                    <button
+                      type="submit"
+                      className="flex w-full justify-center font-sans tracking-widest uppercase rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                     >
-                      Go Back
-                    </Link>
-                  </p>
-                </div>
-              )}
+                      Reset Password
+                    </button>
+                  </div>
+                </form>
+
+                <p className="mt-10  text-sm text-gray-500 ">
+                  <Link
+                    to="/"
+                    className="font-semibold leading-6 font-sans tracking-widest text-indigo-600 hover:text-indigo-500"
+                  >
+                    Go Back
+                  </Link>
+                </p>
+              </div>
             </div>
           </div>
           <div className="m-auto">

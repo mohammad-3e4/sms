@@ -34,28 +34,9 @@ export const addStudent = createAsyncThunk(
 export const getStudents = createAsyncThunk(
   "student/getStudents",
   async (classValue, thunkAPI) => {
+    console.log(classValue);
     try {
       const response = await fetch(`/student?class=${classValue}`);
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || errorData.error);
-      }
-
-      const data = await response.json();
-
-      return data;
-    } catch (error) {
-      // Handle error
-      return thunkAPI.rejectWithValue({ error: error.message });
-    }
-  }
-);
-export const getAbsents = createAsyncThunk(
-  "student/Absensts",
-  async (classValue, thunkAPI) => {
-    try {
-      const response = await fetch(`/student/absents`);
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -175,6 +156,58 @@ export const toggleAttendance = createAsyncThunk(
   }
 );
 
+export const deleteEntry = createAsyncThunk(
+  'attendance/deleteEntry',
+  async ({ studentId, day }, thunkAPI) => {
+    const requestBody = {
+      student_id: studentId,
+      attendance: day,
+    };
+    console.log(requestBody);
+    try {
+      const response = await fetch('/student/present', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue({ message: error.message });
+    }
+  }
+);
+export const getAbsents = createAsyncThunk(
+  "student/Absensts",
+  async (classValue, thunkAPI) => {
+    try {
+      const response = await fetch(`/student/absents`);
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || errorData.error);
+      }
+
+      const data = await response.json();
+
+      return data;
+    } catch (error) {
+      // Handle error
+      return thunkAPI.rejectWithValue({ error: error.message });
+    }
+  }
+);
+
+
+
 const initialState = {
   students: null,
   loading: false,
@@ -256,7 +289,7 @@ const studentSlice = createSlice({
       .addCase(getStudentById.fulfilled, (state, action) => {
         state.loading = false;
         state.error = null;
-        state.student = action.payload.student; // Assuming payload contains a single student object
+        state.student = action.payload.student; 
       })
       .addCase(getStudentById.rejected, (state, action) => {
         state.loading = false;
@@ -283,6 +316,18 @@ const studentSlice = createSlice({
         state.message = action.payload.message; 
       })
       .addCase(toggleAttendance.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload.error;
+      })     .addCase(deleteEntry.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+        state.message = null;
+      })
+      .addCase(deleteEntry.fulfilled, (state, action) => {
+        state.loading = false;
+        state.message = action.payload.message;
+      })
+      .addCase(deleteEntry.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload.error;
       });

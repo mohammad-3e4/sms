@@ -67,8 +67,7 @@ exports.getStudents = asyncHandler(async (req, res, next) => {
   let sql = "SELECT * FROM students";
 
   const { class: studentClass } = req.query;
-  const clas = studentClass.split("-")[0];
-  const section = studentClass.split("-")[1];
+  const [clas, section] = studentClass.split("-");
 
   if (studentClass) {
     sql += ` WHERE class_name = ? AND section =  ?;`;
@@ -79,7 +78,7 @@ exports.getStudents = asyncHandler(async (req, res, next) => {
       }
       res.status(200).json({ success: true, students: result });
     });
-  } else {
+  } else  {
     db.query(sql, (err, result) => {
       if (err) {
         console.error("Error during retrieval:", err);
@@ -159,17 +158,44 @@ exports.markAbsentStudent = asyncHandler(async (req, res, next) => {
     if (result.affectedRows > 0) {
       res
         .status(200)
-        .json({ success: true, message: "Absent record inserted successfully" });
+        .json({
+          success: true,
+          message: "Absent record inserted successfully",
+        });
     } else {
-      return next(
-        new ErrorHandler("Failed to insert absent record", 500)
-      );
+      return next(new ErrorHandler("Failed to insert absent record", 500));
+    }
+  });
+});
+exports.markPresent = asyncHandler(async (req, res, next) => {
+  const { student_id, attendance } = req.body;
+  console.log(req.body);
+  if (!student_id) {
+    return next(
+      new ErrorHandler(`Student Id (${student_id}) is required`, 400)
+    );
+  }
+
+  const sqlDelete = `DELETE FROM attendance WHERE student_id = ? AND abesent_date = ?`;
+  const valuesDelete = [student_id, attendance];
+
+  db.query(sqlDelete, valuesDelete, (err, result) => {
+    if (err) {
+      console.error("Error during delete:", err);
+      return next(new ErrorHandler("Error during delete", 500));
+    }
+  
+    if (result.affectedRows > 0) {
+      res
+        .status(200)
+        .json({ success: true, message: "Absent record deleted successfully" });
+    } else {
+      return next(new ErrorHandler("Failed to delete absent record", 500));
     }
   });
 });
 
 exports.getAbsents = asyncHandler(async (req, res, next) => {
-
   const sql = "SELECT * FROM attendance;";
 
   db.query(sql, (err, result) => {

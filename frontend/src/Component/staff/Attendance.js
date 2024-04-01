@@ -8,45 +8,44 @@ import {
 } from "react-icons/fa6";
 import Loader from "../../BaseFiles/Loader";
 import { useDispatch, useSelector } from "react-redux";
-import Select from "../../BaseFiles/Select";
 import {
-  getStudents,
-  toggleAttendance,
-  getAbsents,
-  clearMessage,
-  deleteEntry,
-} from "../../redux/studentSlice";
+  setAbsent,
+  setPresent,
+  getEntries,
+  getStaff,
+  clearMessage
+} from "../../redux/staffSlice";
 import { getAllDatesOfMonth } from "../../actions";
 
-const Attendance = () => {
+const StaffAttendance = () => {
   const [rotate, setRotate] = useState(false);
   const currentDate = new Date();
   const currentMonth = currentDate.getMonth();
   const [selectedMonth, setSelectedMonth] = useState(currentMonth);
+
   const dispatch = useDispatch();
-  const { loading, error, message, students, absents } = useSelector(
-    (state) => state.student
+  const { loading, error, message, staff, absents } = useSelector(
+    (state) => state.staff
   );
-  const { user } = useSelector(
-    (state) => state.user
-  );
-  const { selectedClass } = useSelector((state) => state.classes);
+  const { user } = useSelector((state) => state.user);
   const currentUrl = window.location.href;
+
   useEffect(() => {
-    dispatch(getAbsents());
-    dispatch(getStudents(selectedClass));
+    dispatch(getStaff());
+    dispatch(getEntries());
     if (message) {
       dispatch(clearMessage());
     }
-  }, [dispatch, selectedClass, message]);
+  }, [dispatch, message]);
 
   const { dates, monthName } = getAllDatesOfMonth(selectedMonth, 2024);
 
-  const handleAttendance = async (student_id, day) => {
-    dispatch(toggleAttendance({ studentId: student_id, day: day }));
+  const handleAttendance = async (staff_id, day) => {
+    dispatch(setAbsent({ staffId: staff_id, day: day }));
   };
-  const handlePresent = async (student_id, day) => {
-    dispatch(deleteEntry({ studentId: student_id, day: day }));
+  const handlePresent = async (staff_id, day) => {
+
+    dispatch(setPresent({ staffId: staff_id, day: day }));
   };
 
   const handleChange = (event) => {
@@ -77,7 +76,6 @@ const Attendance = () => {
             </select>
             - Year: {new Date().getFullYear()}
           </div>
-          <Select class={true} />
 
           <FaAngleDown className="text-yellow-700 cursor-pointer" />
           <FaArrowsRotate
@@ -104,18 +102,18 @@ const Attendance = () => {
             <table className="max-w-full flex-auto pb-10 pt-0 text-xs text-left rtl:text-right text-gray-500 dark:text-gray-400 relative overflow-x-auto shadow bg-white">
               <thead className="text-xs text-gray-700 capitalize bg-white dark:bg-gray-700 dark:text-gray-400">
                 <tr>
-                  <td scope="col" className="py-2 text-xs">
+                  <td scope="col" className="py-1 text-xs">
                     <div className="flex items-center"></div>
                   </td>
 
                   <td
                     scope="col"
-                    className="py-2 text-xs flex items-center justify-between"
+                    className="py-1 text-xs flex items-center justify-between"
                   >
                     <div>Day</div> <FaArrowRightLong />
                   </td>
                   {dates.map((date, index) => (
-                    <td key={index} scope="col" className="text-xs p-2  ">
+                    <td key={index} scope="col" className="text-xs p-1  ">
                       <div className="flex items-center">
                         {new Date(date).toLocaleDateString("en-US", {
                           weekday: "short",
@@ -125,12 +123,12 @@ const Attendance = () => {
                   ))}
                 </tr>
                 <tr>
-                  <td scope="col" className="p-2 text-xs">
+                  <td scope="col" className="p-1 text-xs">
                     <div className="flex items-center">Name</div>
                   </td>
                   <td
                     scope="col"
-                    className="text-xs py-2 flex items-center gap-2 justify-between"
+                    className="text-xs py-1 flex items-center gap-2 justify-between"
                   >
                     <div>Date </div>
                     <FaArrowRightLong />
@@ -140,7 +138,7 @@ const Attendance = () => {
                     <td
                       key={index}
                       scope="col"
-                      className="text-xs border-b-2 p-2"
+                      className="text-xs border-b-2 p-1"
                     >
                       <div className="flex items-center">
                         {new Date(date).getDate()}
@@ -150,54 +148,48 @@ const Attendance = () => {
                 </tr>
               </thead>
               <tbody>
-                {absents?.length === 0 && students?.length === 0 ? (
+                {absents?.length === 0 && staff?.length === 0 ? (
                   <tr>
                     <td className="text-center py-5" colSpan={dates.length + 2}>
                       No data found
                     </td>
                   </tr>
                 ) : (
-                  students?.map((student) => (
+                  staff?.map((staf) => (
                     <tr
-                      key={student.email}
+                      key={staf.email}
                       className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
                     >
-                      <td className="p-2 whitespace-nowrap capitalize dark:text-white">
-                        {student.student_name}
+                      <td className="p-1 whitespace-nowrap capitalize dark:text-white">
+                        {staf.staff_name}
                       </td>
-                      <td className="p-2 whitespace-nowrap capitalize dark:text-white">
-                        {student.roll_no}
+                      <td className="p-1 whitespace-nowrap capitalize dark:text-white">
+                        {staf.staff_id}
                       </td>
                       {dates.map((day, index) => {
                         const isAttended = absents?.some(
                           (record) =>
-                            record.student_id === student.student_id &&
-                            record.abesent_date === day.toString()
+                            record.staff_id === staf.staff_id &&
+                            record.absent_date === day.toString()
                         );
-
+                      
                         return (
                           <td
                             key={index}
-                            className="p-2 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                            className="p-1 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                           >
                             {isAttended ? (
                               <FaXmark
                                 className="text-red-700 cursor-pointer"
                                 onClick={() =>
-                                  handlePresent(
-                                    student.student_id,
-                                    day.toString()
-                                  )
+                                  handlePresent(staf.staff_id, day.toString())
                                 }
                               />
                             ) : (
                               <FaCheck
                                 className="text-green-700 cursor-pointer"
                                 onClick={() =>
-                                  handleAttendance(
-                                    student.student_id,
-                                    day.toString()
-                                  )
+                                  handleAttendance(staf.staff_id, day.toString())
                                 }
                               />
                             )}
@@ -216,4 +208,4 @@ const Attendance = () => {
   );
 };
 
-export default Attendance;
+export default StaffAttendance;

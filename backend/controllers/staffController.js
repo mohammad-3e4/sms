@@ -125,3 +125,79 @@ exports.deleteMember = asyncHandler(async (req, res, next) => {
     }
   });
 });
+exports.markAbsent = asyncHandler(async (req, res, next) => {
+  const { staff_id, attendance } = req.body;
+  console.log(staff_id, attendance);
+  if (!staff_id) {
+    return next(
+      new ErrorHandler(`Staff Id (${staff_id}) is required`, 400)
+    );
+  }
+
+  const sql = `INSERT INTO staff_attendance (staff_id, absent_date) VALUES (?, ?)`;
+  const values = [staff_id, attendance];
+
+  db.query(sql, values, (err, result) => {
+    if (err) {
+      console.error("Error during insert:", err);
+      return next(new ErrorHandler("Error during insert", 500));
+    }
+
+    if (result.affectedRows > 0) {
+      res
+        .status(200)
+        .json({
+          success: true,
+          message: "Absent record inserted successfully",
+        });
+    } else {
+      return next(new ErrorHandler("Failed to insert absent record", 500));
+    }
+  });
+});
+
+
+exports.markPresent = asyncHandler(async (req, res, next) => {
+  const { staff_id, attendance } = req.body;
+ console.log(req.body);
+  if (!staff_id) {
+    return next(
+      new ErrorHandler(`Student Id (${staff_id}) is required`, 400)
+    );
+  }
+
+  const sqlDelete = `DELETE FROM staff_attendance WHERE staff_id = ? AND absent_date = ?`;
+  const valuesDelete = [staff_id, attendance];
+
+  db.query(sqlDelete, valuesDelete, (err, result) => {
+    if (err) {
+      console.error("Error during delete:", err);
+      return next(new ErrorHandler("Error during delete", 500));
+    }
+  
+    if (result.affectedRows > 0) {
+      res
+        .status(200)
+        .json({ success: true, message: "Absent record deleted successfully" });
+    } else {
+      return next(new ErrorHandler("Failed to delete absent record", 500));
+    }
+  });
+});
+
+exports.getEntries = asyncHandler(async (req, res, next) => {
+  const sql = "SELECT * FROM staff_attendance;";
+   console.log("HII");
+  db.query(sql, (err, result) => {
+    if (err) {
+      console.error("Error during retrieval:", err);
+      return next(new ErrorHandler("Error during retrieval", 500));
+    }
+
+    if (result.length > 0) {
+      res.status(200).json({ success: true, absents: result });
+    } else {
+      return next(new ErrorHandler("Staff not found", 404));
+    }
+  });
+});

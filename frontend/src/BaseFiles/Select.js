@@ -6,7 +6,7 @@ const Select = ({ subject }) => {
   const dispatch = useDispatch();
   const { classes } = useSelector((state) => state.classes);
   const { user } = useSelector((state) => state.user);
- 
+
   const { selectedClass } = useSelector((state) => state.classes);
 
   useEffect(() => {
@@ -51,20 +51,22 @@ const Select = ({ subject }) => {
     }
   }
   const handleChange = (e) => {
+    console.log(e.target.value);
     dispatch(setClass(e.target.value));
   };
   return (
     <div className="flex w-full">
       <div className="w-full px-2">
         <div className="relative w-full ">
-         
           <select
             id="class_name"
             type="text"
             onChange={(e) => handleChange(e)}
             className={`border-0 px-3 py-2 placeholder-blueGray-300  focus:bg-white text-gray-600  bg-gray-200 rounded-sm text-sm shadow focus:outline-none  w-full ease-linear transition-all duration-150 border-red-500`}
           >
-            <option value="">Choose a class</option>
+            <option value={user.role === "admin" ? "" : "uisdlk"}>
+              Choose a class
+            </option>
             {classesWithId?.map((clas, index) => (
               <option value={clas.class_name} key={index}>
                 {clas.class_name}
@@ -76,7 +78,6 @@ const Select = ({ subject }) => {
       {subject && (
         <div className="w-full px-2">
           <div className="relative w-full">
-        
             <select
               id="subject"
               type="text"
@@ -92,7 +93,6 @@ const Select = ({ subject }) => {
           </div>
         </div>
       )}
-  
     </div>
   );
 };

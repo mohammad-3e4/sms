@@ -12,6 +12,7 @@ const {
   updateStudent,
   markAbsentStudent,
   getAbsents,
+  markPresent
 } = require("../controllers/studentController");
 
 // Route to get all students
@@ -25,6 +26,12 @@ router.get(
   "/absents",
   getAbsents
 );
+
+router.delete(
+  "/present",
+  markPresent
+);
+
 // Routes for individual student
 router
   .route("/:id")

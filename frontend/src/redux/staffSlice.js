@@ -32,6 +32,7 @@ export const addStaff = createAsyncThunk(
 export const getStaff = createAsyncThunk(
   "staff/getStaff",
   async (_, thunkAPI) => {
+  
     try {
       const response = await fetch("/staff");
 
@@ -97,7 +98,6 @@ export const deleteStaff = createAsyncThunk(
 export const updateStaff = createAsyncThunk(
   "student/updateStaff",
   async ({ staffId, updatedData }, thunkAPI) => {
-
     try {
       // Your asynchronous logic to update student here
       const response = await fetch(`/staff/${staffId}`, {
@@ -114,7 +114,87 @@ export const updateStaff = createAsyncThunk(
       }
 
       const data = await response.json();
-    
+
+      return data;
+    } catch (error) {
+      // Handle error
+      return thunkAPI.rejectWithValue({ error: error.message });
+    }
+  }
+);
+export const setAbsent = createAsyncThunk(
+  "student/setAbsent",
+  async ({ staffId, day }) => {
+    try {
+      const requestBody = {
+        staff_id: staffId,
+        attendance: day,
+      };
+
+      const response = await fetch("/staff/attendance", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+
+        return data;
+      } else {
+        const error = await response.json();
+        throw new Error(error.message);
+      }
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+);
+
+export const setPresent = createAsyncThunk(
+  "attendance/setPresent",
+  async ({ staffId, day }, thunkAPI) => {
+    const requestBody = {
+      staff_id: staffId,
+      attendance: day,
+    };
+    try {
+      const response = await fetch("/staff/present", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue({ message: error.message });
+    }
+  }
+);
+export const getEntries = createAsyncThunk(
+  "student/Absensts",
+  async (_, thunkAPI) => {
+    console.log("HII");
+    try {
+      const response = await fetch(`/staff/entries`);
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || errorData.error);
+      }
+
+      const data = await response.json();
+      console.log(data);
       return data;
     } catch (error) {
       // Handle error
@@ -129,6 +209,7 @@ const initialState = {
   error: null,
   message: null,
   member: null,
+  absents: null,
 };
 
 const staffSlice = createSlice({
@@ -209,9 +290,47 @@ const staffSlice = createSlice({
         state.loading = false;
         state.error = null;
         state.message = action.payload.message;
-
       })
       .addCase(updateStaff.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload.error;
+      })
+      .addCase(getEntries.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getEntries.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = null;
+        state.absents = action.payload.absents;
+      })
+      .addCase(getEntries.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload.error;
+      })
+      .addCase(setAbsent.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(setAbsent.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = null;
+        state.message = action.payload.message;
+      })
+      .addCase(setAbsent.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload.error;
+      })
+      .addCase(setPresent.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+        state.message = null;
+      })
+      .addCase(setPresent.fulfilled, (state, action) => {
+        state.loading = false;
+        state.message = action.payload.message;
+      })
+      .addCase(setPresent.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload.error;
       });

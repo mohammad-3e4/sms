@@ -5,7 +5,19 @@ const asyncHandler = require("express-async-handler");
 const dotenv = require("dotenv");
 const multer = require("multer");
 const db = require("../config/database");
+const jwt = require("jsonwebtoken");
+const { v4: uuidv4 } = require("uuid");
+const nodemailer = require("nodemailer");
+
 dotenv.config({ path: "backend/config/config.env" });
+
+const transporter = nodemailer.createTransport({
+  service: "Gmail",
+  auth: {
+    user: "tubedev87@gmail.com",
+    pass: "fipn xijp mame dmzj",
+  },
+});
 
 exports.signin = catchAsyncErrors(async (request, response, next) => {
   const { email, password, tableName } = request.body;
@@ -70,6 +82,7 @@ exports.updateProfile = asyncHandler(async (req, res) => {
 
 exports.forgotPassword = asyncHandler(async (req, res) => {
   const { email } = req.body;
+  console.log(email);
   try {
     db.query(
       "SELECT * FROM staff WHERE email = ?",
@@ -87,17 +100,16 @@ exports.forgotPassword = asyncHandler(async (req, res) => {
         const resetToken = uuidv4();
 
         const jwtToken = jwt.sign(
-          { ID: staff.ID, resetToken },
-          "your-secret-key",
+          { staff_id: staff.staff_id, resetToken },
+          process.env.SECRET_KEY,
           {
             expiresIn: "1h",
           }
         );
 
-        // Update reset token and expiry in MySQL database
         db.query(
-          `UPDATE staff SET resetPasswordToken = ?, resetPasswordExpiry = DATE_ADD(NOW(), INTERVAL 1 HOUR) WHERE ID = ?`,
-          [jwtToken, staff.ID],
+          `UPDATE staff SET reset_password_token = ?, reset_password_expiry = DATE_ADD(NOW(), INTERVAL 1 HOUR) WHERE staff_id = ?`,
+          [jwtToken, staff.staff_id],
           async (error, results, fields) => {
             if (error) {
               return res.status(500).json({ message: error.message });
@@ -128,7 +140,7 @@ exports.forgotPassword = asyncHandler(async (req, res) => {
 exports.resetPassword = asyncHandler(async (req, res) => {
   const { token } = req.params;
   const { newPassword } = req.body;
-
+  console.log(req.body);
   try {
     if (!token || !newPassword) {
       return res
@@ -138,7 +150,7 @@ exports.resetPassword = asyncHandler(async (req, res) => {
 
     // Query the database to find a teacher with the provided reset token and expiry
     db.query(
-      "SELECT * FROM staff WHERE resetPasswordToken = ? AND resetPasswordExpiry > NOW()",
+      "SELECT * FROM staff WHERE reset_password_token = ? AND reset_password_expiry > NOW()",
       [token],
       (error, results) => {
         if (error) {
@@ -151,8 +163,8 @@ exports.resetPassword = asyncHandler(async (req, res) => {
 
         const teacher = results[0];
         db.query(
-          "UPDATE staff SET password = ?, resetPasswordToken = NULL, resetPasswordExpiry = NULL WHERE teacher_id = ?",
-          [newPassword, teacher.teacher_id],
+          "UPDATE staff SET password = ?, reset_password_token = NULL, reset_password_expiry = NULL WHERE staff_id = ?",
+          [newPassword, teacher.staff_id],
           (updateError) => {
             if (updateError) {
               next(new ErrorHandler(updateError.message, 500));

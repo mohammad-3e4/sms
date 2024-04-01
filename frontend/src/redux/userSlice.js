@@ -28,6 +28,60 @@ export const loginUser = createAsyncThunk(
     }
   }
 );
+export const forgotPassword = createAsyncThunk(
+  "user/forgotPassword",
+  async (values, thunkAPI) => {
+    try {
+      const response = await fetch("/auth/forgot-password", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(values),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message);
+      }
+
+      const data = await response.json();
+      console.log(data);
+      return data;
+    } catch (error) {
+      // Handle error
+      return thunkAPI.rejectWithValue({ error: error.message });
+    }
+  }
+);
+export const resetPassword = createAsyncThunk(
+  "user/resetPassword",
+  async ({newPassword, token}, thunkAPI) => {
+   console.log(newPassword, token);
+    try {
+      const response = await fetch(`/auth`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newPassword),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.log(errorData);
+        throw new Error(errorData.message);
+      }
+
+      const data = await response.json();
+      console.log(data);
+      return data;
+    } catch (error) {
+      // Handle error
+      return thunkAPI.rejectWithValue({ error: error.message });
+    }
+  }
+);
 export const logoutUser = createAsyncThunk(
   "user/logoutUser",
   async (_, thunkAPI) => {
@@ -55,6 +109,7 @@ const initialState = {
   user: null,
   loading: false,
   error: null,
+  message: null,
 };
 
 const userSlice = createSlice({
@@ -63,6 +118,9 @@ const userSlice = createSlice({
   reducers: {
     clearErrors: (state) => {
       state.error = null;
+    },
+    clearMessage: (state) => {
+      state.message = null;
     },
   },
   extraReducers: (builder) => {
@@ -78,7 +136,7 @@ const userSlice = createSlice({
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload.error; 
+        state.error = action.payload.error;
       })
       .addCase(logoutUser.pending, (state) => {
         state.loading = true;
@@ -91,11 +149,37 @@ const userSlice = createSlice({
       })
       .addCase(logoutUser.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload.error; 
+        state.error = action.payload.error;
+      })
+      .addCase(forgotPassword.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(forgotPassword.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = null;
+        state.message = action.payload.message;;
+      })
+      .addCase(forgotPassword.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload.error;
+      })
+      .addCase(resetPassword.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(resetPassword.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = null;
+        state.message = action.payload.message;;
+      })
+      .addCase(resetPassword.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload.error;
       });
   },
 });
 
-export const { clearErrors } = userSlice.actions;
+export const { clearErrors, clearMessage } = userSlice.actions;
 
 export default userSlice.reducer;
