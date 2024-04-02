@@ -23,7 +23,7 @@ router.get(
 );
 router
   .route("/:id")
-  .get(isAuthenticatedUser, authorizeRoles("admin"), getMember)
+  .get(isAuthenticatedUser, authorizeRoles("admin", 'teacher'), getMember)
   .delete(isAuthenticatedUser, authorizeRoles("admin"), deleteMember)
   .post(isAuthenticatedUser, authorizeRoles("admin", "teacher"), updateMember);
 

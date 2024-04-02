@@ -43,7 +43,6 @@ const ResetPassword = () => {
     initialValues,
     validationSchema: validationSchema,
     onSubmit: async (values) => {
-      console.log(values);
       dispatch(resetPassword({ newPassword: values.newPassword, token }));
     },
   });
@@ -59,8 +58,7 @@ const ResetPassword = () => {
                   Reset Password
                 </h2>
               </div>
-              {message && <SuccessAlert message={message} />}
-              {error && <ErrorAlert error={error} />}
+
               <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
                 <form className="space-y-6" onSubmit={formik.handleSubmit}>
                   <div>
@@ -154,7 +152,8 @@ const ResetPassword = () => {
                         </p>
                       )}
                   </div>
-        
+                  {message && <SuccessAlert message={message} />}
+                  {error && <ErrorAlert error={error} />}
                   <div>
                     <button
                       type="submit"

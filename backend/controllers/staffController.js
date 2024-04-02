@@ -80,7 +80,6 @@ exports.getStaff = asyncHandler(async (req, res, next) => {
 exports.updateMember = asyncHandler(async (req, res, next) => {
   const updatedFields = req.body;
   const { id } = req.params;
-  
   const updateFieldsString = Object.keys(updatedFields)
     .map((key) => `${key}="${updatedFields[key]}"`)
     .join(", ");

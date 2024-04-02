@@ -4,6 +4,7 @@ const {
   isAuthenticatedUser,
   authorizeRoles,
 } = require("../middlewares/authMiddleware");
+const upload = require('../middlewares/upload')
 const {
   createStudent,
   getStudent,
@@ -12,7 +13,8 @@ const {
   updateStudent,
   markAbsentStudent,
   getAbsents,
-  markPresent
+  markPresent,
+  uploadDocuments
 } = require("../controllers/studentController");
 
 // Route to get all students
@@ -58,6 +60,15 @@ router.put(
   authorizeRoles("admin", "teacher"),
   markAbsentStudent
 );
+
+router
+  .route("/upload/:id")
+  .post(
+    isAuthenticatedUser,
+    authorizeRoles("admin", 'teacher'),
+    upload.single('file'),
+    uploadDocuments
+  );
 
 
 module.exports = router;

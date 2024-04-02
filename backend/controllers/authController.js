@@ -59,13 +59,14 @@ exports.signout = catchAsyncErrors(async (request, response, next) => {
 exports.updateProfile = asyncHandler(async (req, res) => {
   const updatedData = req.body;
 
+
   const { updatedFields } = updatedData;
   const updateFieldsString = Object.keys(updatedFields)
     .map((key) => `${key}="${updatedFields[key]}"`)
     .join(", ");
 
-  const sql = `UPDATE staff SET ${updateFieldsString} WHERE ID = ${req.user.teacher_id};`;
-
+  const sql = `UPDATE staff SET ${updateFieldsString} WHERE staff_id = ${req.user.staff_id};`;
+  console.log(sql);
   db.query(sql, (err, result) => {
     if (err) {
       console.error("Error during update:", err);
@@ -79,6 +80,25 @@ exports.updateProfile = asyncHandler(async (req, res) => {
     }
   });
 });
+// exports.getProfile = asyncHandler(async (req, res, next) => {
+//   const staffId = req.user.staff_id;
+
+//   const sql = `SELECT * FROM staff WHERE staff_id = ${staffId};`;
+//   console.log(sql);
+
+//   db.query(sql, (err, result) => {
+//     if (err) {
+//       console.error("Error during profile retrieval:", err);
+//       return next(new ErrorHandler("Error during profile retrieval", 500));
+//     }
+
+//     if (result.length > 0) {
+//       res.status(200).json({ success: true, user: result[0] });
+//     } else {
+//       return next(new ErrorHandler("User not found", 404));
+//     }
+//   });
+// });
 
 exports.forgotPassword = asyncHandler(async (req, res) => {
   const { email } = req.body;
@@ -137,45 +157,34 @@ exports.forgotPassword = asyncHandler(async (req, res) => {
   }
 });
 
-exports.resetPassword = asyncHandler(async (req, res) => {
+exports.resetPassword = asyncHandler(async (req, res, next) => {
   const { token } = req.params;
   const { newPassword } = req.body;
-  console.log(req.body);
+
   try {
     if (!token || !newPassword) {
-      return res
-        .status(400)
-        .json({ message: "Token and newPassword are required" });
+      return res.status(400).json({ message: "Token and newPassword are required" });
     }
 
-    // Query the database to find a teacher with the provided reset token and expiry
-    db.query(
+    const [results] = await db.promise().query(
       "SELECT * FROM staff WHERE reset_password_token = ? AND reset_password_expiry > NOW()",
-      [token],
-      (error, results) => {
-        if (error) {
-          next(new ErrorHandler(error.message, 500));
-        }
-
-        if (results.length === 0) {
-          next(new ErrorHandler("Invalid or expired token", 400));
-        }
-
-        const teacher = results[0];
-        db.query(
-          "UPDATE staff SET password = ?, reset_password_token = NULL, reset_password_expiry = NULL WHERE staff_id = ?",
-          [newPassword, teacher.staff_id],
-          (updateError) => {
-            if (updateError) {
-              next(new ErrorHandler(updateError.message, 500));
-            }
-
-            res.status(200).json({ message: "Password reset successful" });
-          }
-        );
-      }
+      [token]
     );
+
+    if (results.length === 0) {
+      return res.status(400).json({ message: "Invalid or expired token" });
+    }
+
+    const teacher = results[0];
+
+    await db.promise().query(
+      "UPDATE staff SET password = ?, reset_password_token = NULL, reset_password_expiry = NULL WHERE staff_id = ?",
+      [newPassword, teacher.staff_id]
+    );
+
+    res.status(200).json({ message: "Password reset successful" });
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    next(new ErrorHandler(error.message, 500));
   }
 });
+

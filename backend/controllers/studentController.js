@@ -1,11 +1,9 @@
 const ErrorHandler = require("../utils/errorHandler");
 const catchAsyncErrors = require("../middlewares/cathAsyncErrorsMiddleware");
-const sendToken = require("../utils/jwtToken");
 const asyncHandler = require("express-async-handler");
 const dotenv = require("dotenv");
 const db = require("../config/database");
 dotenv.config({ path: "backend/config/config.env" });
-//  Register new us
 
 // exports.createStudent = async (req, res, next) => {
 //   res.send("ok")
@@ -211,3 +209,16 @@ exports.getAbsents = asyncHandler(async (req, res, next) => {
     }
   });
 });
+
+exports.uploadDocuments = asyncHandler(async (req, res, next) => {
+  // Access the uploaded file details using req.file
+  console.log(req.file);
+  
+  // Access other form data if needed
+  const { document_name } = req.body;
+
+  // Process the file and other form data as needed
+  // For demonstration, we'll just send back a success message
+  res.status(200).json({ message: `${req.file.originalname} successfully uploaded` });
+});
+

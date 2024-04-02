@@ -7,7 +7,7 @@ import ErrorAlert from "../BaseFiles/ErrorAlert";
 import SuccessAlert from "../BaseFiles/SuccessAlert";
 import { forgotPassword, clearErrors, clearMessage } from "../redux/userSlice";
 import { useSelector, useDispatch } from "react-redux";
-
+import Spinner from "../BaseFiles/Spinner";
 const ForgotPassword = () => {
   const dispatch = useDispatch();
 
@@ -18,6 +18,13 @@ const ForgotPassword = () => {
   const validationSchema = Yup.object().shape({
     email: Yup.string().email("Incorrect email").required("Email is required"),
   });
+  const formik = useFormik({
+    initialValues,
+    validationSchema: validationSchema,
+    onSubmit: async (values) => {
+      dispatch(forgotPassword(values));
+    },
+  });
   useEffect(()=>{
     if(error){
       setTimeout(() => {
@@ -26,19 +33,14 @@ const ForgotPassword = () => {
     }
     if(message){
       setTimeout(() => {
+         formik.resetForm()
         dispatch(clearMessage());
       }, 3000);
     }
 
-  },[error, message, loading,])
+  },[error, message, loading, formik])
 
-  const formik = useFormik({
-    initialValues,
-    validationSchema: validationSchema,
-    onSubmit: async (values) => {
-      dispatch(forgotPassword(values));
-    },
-  });
+
 
   return (
     <>
@@ -89,9 +91,9 @@ const ForgotPassword = () => {
                   <div>
                     <button
                       type="submit"
-                      className="flex w-full uppercase font-sans tracking-widest justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                      className={`flex w-full uppercase tracking-widest justify-center rounded ${loading ? 'bg-indigo-200' :'bg-indigo-600'} px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600`}
                     >
-                      Submit
+                         {loading ? <Spinner/> : 'Submit'}
                     </button>
                   </div>
                 </form>

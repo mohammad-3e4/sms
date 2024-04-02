@@ -54,31 +54,27 @@ export const forgotPassword = createAsyncThunk(
     }
   }
 );
+
 export const resetPassword = createAsyncThunk(
-  "user/resetPassword",
-  async ({newPassword, token}, thunkAPI) => {
-   console.log(newPassword, token);
+  'auth/resetPassword',
+  async ({ newPassword, token }, { rejectWithValue }) => {
     try {
-      const response = await fetch(`/auth`, {
-        method: "POST",
+      const response = await fetch(`/auth/reset-password/${token}`, {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify(newPassword),
+        body: JSON.stringify({ newPassword }),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        console.log(errorData);
         throw new Error(errorData.message);
       }
 
-      const data = await response.json();
-      console.log(data);
-      return data;
+      return await response.json();
     } catch (error) {
-      // Handle error
-      return thunkAPI.rejectWithValue({ error: error.message });
+      return rejectWithValue(error.message);
     }
   }
 );
@@ -97,6 +93,33 @@ export const logoutUser = createAsyncThunk(
 
       const data = await response.json();
       console.log(data);
+      return data;
+    } catch (error) {
+      // Handle error
+      return thunkAPI.rejectWithValue({ error: error.message });
+    }
+  }
+);
+
+export const updateUser = createAsyncThunk(
+  "student/updateUser",
+  async ( updatedData, thunkAPI) => {
+    try {
+      const response = await fetch(`/auth/update`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedData)
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message);
+      }
+
+      const data = await response.json();
+
       return data;
     } catch (error) {
       // Handle error
@@ -148,6 +171,19 @@ const userSlice = createSlice({
         state.user = null;
       })
       .addCase(logoutUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload.error;
+      })
+      .addCase(updateUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateUser.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = null;
+        state.user = action.payload.user;
+      })
+      .addCase(updateUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload.error;
       })

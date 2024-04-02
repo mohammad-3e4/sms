@@ -6,11 +6,12 @@ import SuccessAlert from "../../BaseFiles/SuccessAlert";
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-
+import { FiUpload } from "react-icons/fi";
 import {
   clearErrors,
   clearMessage,
   getStudentById,
+  uploadDocuments
 } from "../../redux/studentSlice";
 import { useParams } from "react-router-dom";
 
@@ -18,12 +19,14 @@ const Details = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [documentName, setDoumentName] = useState('');
+
   const [rotate, setRotate] = useState(false);
   const { loading, error, message, student } = useSelector(
     (state) => state.student
   );
 
-  console.log(id);
   const handleRefresh = () => {
     setRotate(true);
     setTimeout(() => {
@@ -46,6 +49,21 @@ const Details = () => {
     }
   }, [dispatch, error, message]);
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    setSelectedFile(file);
+  };
+
+  const handleUpload = () => {
+    
+    if (selectedFile) {
+  
+      dispatch(uploadDocuments({student_id:id, document_name:documentName, file:selectedFile}));
+    } else {
+      console.log("No file selected.");
+    }
+  };
+
   return (
     <section className="py-1  w-full m-auto">
       <div className="flex flex-wrap justify-between bg-white py-2 mb-1">
@@ -62,7 +80,10 @@ const Details = () => {
             }`}
             onClick={handleRefresh}
           />
-          <FaXmark className="text-red-700 cursor-pointer"  onClick={()=>navigate('/all/students')}/>
+          <FaXmark
+            className="text-red-700 cursor-pointer"
+            onClick={() => navigate("/all/students")}
+          />
         </div>
       </div>
       {message && <SuccessAlert message={message} />}
@@ -81,7 +102,7 @@ const Details = () => {
                 <div className="w-1/4 ">
                   <img className="w-28" src="/default_male.png" />
                 </div>
-                <div className="flex w-3/4  justify-between mx-5 ">
+                <div className="flex w-2/4  justify-between mx-5 ">
                   <div className="w-1/2 ml-12 font-sans">
                     <ul className="">
                       <li className="p-1 ">
@@ -123,6 +144,60 @@ const Details = () => {
                         {new Date(student?.date_of_birth).toLocaleDateString()}
                       </li>
                     </ul>
+                  </div>
+                </div>
+                <div className="flex w-1/4  justify-between mx-5 ">
+                  <div className="mb-5">
+                    <div className="w-full  px-2">
+                      <div className="relative w-full mb-3">
+                        <label
+                          className="block capitalize tracking-widest text-gray-600  text-xs font-bold mb-2"
+                          htmlFor="document_name"
+                        >
+                          document name
+                        </label>
+                        <select
+                          id="document_name"
+                          type="text"
+                          onChange={(e)=>setDoumentName(e.target.value)}
+                          className={`border-0 px-3 py-2 placeholder-blueGray-300  focus:bg-white text-gray-600  bg-gray-200 rounded-sm text-sm shadow focus:outline-none  w-full ease-linear transition-all duration-150 `}
+                        >
+                          <option value="">Choose one</option>
+                          <option value="aadhar">Aadhar Card</option>
+                          <option value="marksheet">Mark SHeet</option>
+                          <option value="pan">PAN Card</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div className="w-full  px-2">
+                      <div className="relative w-full mb-3">
+                        <label
+                          className="block capitalize tracking-widest text-gray-600  text-xs font-bold mb-2"
+                          htmlFor="documents"
+                        >
+                          Upload (PDF and Images only)
+                        </label>
+
+                        <div className="mt-2 relative">
+                          <input
+                            id="documents"
+                            type="file"
+                            accept=".pdf, image/*"
+                            onChange={handleFileChange}
+                            className={`border-0 px-3 py-2 placeholder-blueGray-300  focus:bg-white text-gray-600  bg-gray-200 rounded-sm text-sm shadow focus:outline-none  w-full ease-linear transition-all duration-150 `}
+                          />
+                          <span
+                            onClick={handleUpload}
+                            className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5 text-gray-600 cursor-pointer"
+                          >
+                            <FiUpload
+                              className="h-6 w-6 cursor-pointer text-green-600"
+                              aria-hidden="true"
+                            />
+                          </span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>

@@ -16,6 +16,7 @@ const errorMiddleware = require("./middlewares/errorMiddleware");
 
 const app = experss();
 app.use(experss.json());
+app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
@@ -57,6 +58,7 @@ const storage = multer.diskStorage({
     return cb(null, `${file.originalname}`);
   },
 });
+
 const upload = multer({ storage: storage });
 // login user
 app.post("/api/v1/staff",isAuthenticatedUser, authorizeRoles('admin'),  upload.single("file"), async (req, res, next) => {

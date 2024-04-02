@@ -126,7 +126,7 @@ export const getStudentById = createAsyncThunk(
   }
 );
 export const toggleAttendance = createAsyncThunk(
-  'student/toggleAttendance',
+  "student/toggleAttendance",
   async ({ studentId, day }) => {
     try {
       const requestBody = {
@@ -134,17 +134,17 @@ export const toggleAttendance = createAsyncThunk(
         attendance: day,
       };
 
-      const response = await fetch('/student/attendance', {
-        method: 'PUT',
+      const response = await fetch("/student/attendance", {
+        method: "PUT",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(requestBody),
       });
 
       if (response.ok) {
-       const data = await response.json();
-  
+        const data = await response.json();
+
         return data;
       } else {
         const error = await response.json();
@@ -157,7 +157,7 @@ export const toggleAttendance = createAsyncThunk(
 );
 
 export const deleteEntry = createAsyncThunk(
-  'attendance/deleteEntry',
+  "attendance/deleteEntry",
   async ({ studentId, day }, thunkAPI) => {
     const requestBody = {
       student_id: studentId,
@@ -165,10 +165,10 @@ export const deleteEntry = createAsyncThunk(
     };
     console.log(requestBody);
     try {
-      const response = await fetch('/student/present', {
-        method: 'DELETE',
+      const response = await fetch("/student/present", {
+        method: "DELETE",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(requestBody),
       });
@@ -206,6 +206,34 @@ export const getAbsents = createAsyncThunk(
   }
 );
 
+export const uploadDocuments = createAsyncThunk(
+  "student/uploadDocuments",
+  async ({ student_id, document_name, file }, thunkAPI) => {
+    try {
+      const formData = new FormData();
+      formData.append('file', file); 
+      formData.append('document_name', document_name); 
+
+      const response = await fetch(`/student/upload/${student_id}`, {
+        method: "POST",
+        body: formData, 
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.log(errorData);
+        throw new Error(errorData.error);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.log(error.message);
+      // Handle error
+      return thunkAPI.rejectWithValue({ error: error.message });
+    }
+  }
+);
 
 
 const initialState = {
@@ -214,7 +242,7 @@ const initialState = {
   error: null,
   message: null,
   student: null,
-  absents: null
+  absents: null,
 };
 
 const studentSlice = createSlice({
@@ -289,36 +317,39 @@ const studentSlice = createSlice({
       .addCase(getStudentById.fulfilled, (state, action) => {
         state.loading = false;
         state.error = null;
-        state.student = action.payload.student; 
+        state.student = action.payload.student;
       })
       .addCase(getStudentById.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload.error;
-      }).addCase(getAbsents.pending, (state) => {
+      })
+      .addCase(getAbsents.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(getAbsents.fulfilled, (state, action) => {
         state.loading = false;
         state.error = null;
-        state.absents = action.payload.absents; 
+        state.absents = action.payload.absents;
       })
       .addCase(getAbsents.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload.error;
-      }).addCase(toggleAttendance.pending, (state) => {
+      })
+      .addCase(toggleAttendance.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(toggleAttendance.fulfilled, (state, action) => {
         state.loading = false;
         state.error = null;
-        state.message = action.payload.message; 
+        state.message = action.payload.message;
       })
       .addCase(toggleAttendance.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload.error;
-      })     .addCase(deleteEntry.pending, (state) => {
+      })
+      .addCase(deleteEntry.pending, (state) => {
         state.loading = true;
         state.error = null;
         state.message = null;
@@ -328,6 +359,19 @@ const studentSlice = createSlice({
         state.message = action.payload.message;
       })
       .addCase(deleteEntry.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload.error;
+      })
+      .addCase(uploadDocuments.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+        state.message = null;
+      })
+      .addCase(uploadDocuments.fulfilled, (state, action) => {
+        state.loading = false;
+        state.message = action.payload.message;
+      })
+      .addCase(uploadDocuments.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload.error;
       });
