@@ -4,7 +4,6 @@ const {
   isAuthenticatedUser,
   authorizeRoles,
 } = require("../middlewares/authMiddleware");
-const upload = require('../middlewares/upload')
 const {
   createStudent,
   getStudent,
@@ -14,7 +13,9 @@ const {
   markAbsentStudent,
   getAbsents,
   markPresent,
-  uploadDocuments
+  uploadDocuments,
+  getStudentDocumentsById,
+  deleteStudentDocument,
 } = require("../controllers/studentController");
 
 // Route to get all students
@@ -24,35 +25,16 @@ router.get(
   authorizeRoles("teacher", "admin"),
   getStudents
 );
-router.get(
-  "/absents",
-  getAbsents
-);
+router.get("/absents", getAbsents);
 
-router.delete(
-  "/present",
-  markPresent
-);
+router.delete("/present", markPresent);
 
 // Routes for individual student
 router
   .route("/:id")
-  .get(
-    isAuthenticatedUser,
-    authorizeRoles("teacher", "admin"),
-    getStudent
-  )
-  .delete(
-    isAuthenticatedUser,
-    authorizeRoles("admin"),
-    deleteStudent
-  )
-  .post(
-    isAuthenticatedUser,
-    authorizeRoles("admin"),
-    updateStudent
-  );
-
+  .get(isAuthenticatedUser, authorizeRoles("teacher", "admin"), getStudent)
+  .delete(isAuthenticatedUser, authorizeRoles("admin"), deleteStudent)
+  .post(isAuthenticatedUser, authorizeRoles("admin"), updateStudent);
 
 router.put(
   "/attendance",
@@ -62,13 +44,9 @@ router.put(
 );
 
 router
-  .route("/upload/:id")
-  .post(
-    isAuthenticatedUser,
-    authorizeRoles("admin", 'teacher'),
-    upload.single('file'),
-    uploadDocuments
-  );
-
+  .route("/upload/:student_id")
+  .post(isAuthenticatedUser, authorizeRoles("admin"), uploadDocuments)
+  .get(isAuthenticatedUser, authorizeRoles("admin"), getStudentDocumentsById)
+  .delete(isAuthenticatedUser, authorizeRoles("admin"), deleteStudentDocument);
 
 module.exports = router;

@@ -4,7 +4,9 @@ const asyncHandler = require("express-async-handler");
 const dotenv = require("dotenv");
 const db = require("../config/database");
 dotenv.config({ path: "backend/config/config.env" });
-
+const fs = require("fs");
+const path = require("path");
+const { v4: uuidv4 } = require("uuid");
 // exports.createStudent = async (req, res, next) => {
 //   res.send("ok")
 //   try {
@@ -76,7 +78,7 @@ exports.getStudents = asyncHandler(async (req, res, next) => {
       }
       res.status(200).json({ success: true, students: result });
     });
-  } else  {
+  } else {
     db.query(sql, (err, result) => {
       if (err) {
         console.error("Error during retrieval:", err);
@@ -154,12 +156,10 @@ exports.markAbsentStudent = asyncHandler(async (req, res, next) => {
     }
 
     if (result.affectedRows > 0) {
-      res
-        .status(200)
-        .json({
-          success: true,
-          message: "Absent record inserted successfully",
-        });
+      res.status(200).json({
+        success: true,
+        message: "Absent record inserted successfully",
+      });
     } else {
       return next(new ErrorHandler("Failed to insert absent record", 500));
     }
@@ -182,7 +182,7 @@ exports.markPresent = asyncHandler(async (req, res, next) => {
       console.error("Error during delete:", err);
       return next(new ErrorHandler("Error during delete", 500));
     }
-  
+
     if (result.affectedRows > 0) {
       res
         .status(200)
@@ -211,14 +211,113 @@ exports.getAbsents = asyncHandler(async (req, res, next) => {
 });
 
 exports.uploadDocuments = asyncHandler(async (req, res, next) => {
-  // Access the uploaded file details using req.file
-  console.log(req.file);
-  
-  // Access other form data if needed
-  const { document_name } = req.body;
+  const studentId = req.params.student_id;
+  const documentName = req.body.document_name;
+  const file = req.files.file;
 
-  // Process the file and other form data as needed
-  // For demonstration, we'll just send back a success message
-  res.status(200).json({ message: `${req.file.originalname} successfully uploaded` });
+  if (!file) {
+    return res.status(400).json({ message: "No file uploaded" });
+  }
+
+  try {
+
+    const folderPath = path.join(
+      __dirname,
+      "..",
+      "..",
+      "frontend",
+      "public",
+      documentName
+    );
+
+    fs.mkdirSync(folderPath, { recursive: true });
+
+    // Move the uploaded file to the folder
+    const [_, fileType] = file.name.split(".");
+
+    const fileName = `${studentId}_${documentName}.${fileType}`;
+    const filePath = path.join(folderPath, fileName);
+    await file.mv(filePath);
+    await updateDocumentName(studentId, documentName, fileName);
+
+    res.status(200).json({ message: "File uploaded successfully" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
+
+exports.getStudentDocumentsById = asyncHandler(async (req, res, next) => {
+  const sql = "SELECT * FROM student_documents WHERE student_id =?;";
+  const { student_id } = req.params;
+  db.query(sql,[student_id], (err, result) => {
+    if (err) {
+      console.error("Error during retrieval:", err);
+      return next(new ErrorHandler("Error during retrieval", 500));
+    }
+
+    if (result.length > 0) {
+      res.status(200).json({ success: true, documents: result });
+    } else {
+      return next(new ErrorHandler("Student not found", 404));
+    }
+  });
+});
+exports.deleteStudentDocument = asyncHandler(async (req, res, next) => {
+  const { student_id } = req.params;
+  const {  document_name } = req.body;
+
+  let query = "DELETE FROM student_documents WHERE student_id = ? AND document_name = ?";
+  let params = [student_id, document_name];
+
+  // Check which columns are present in the request body and add them to the query and parameters
+  
+
+  db.query(query, params, (err, result) => {
+    if (err) {
+      console.error("Error during deletion:", err);
+      return next(new ErrorHandler("Error during deletion", 500));
+    }
+
+    if (result.affectedRows > 0) {
+      res.status(200).json({ success: true, message: "Document deleted successfully" });
+    } else {
+      return next(new ErrorHandler("Document not found", 404));
+    }
+  });
+});
+
+
+function updateDocumentName(studentId, documentName, value) {
+  return new Promise((resolve, reject) => {
+    const checkQuery = `SELECT COUNT(*) AS count FROM student_documents WHERE student_id = ?`;
+    db.query(checkQuery, [studentId], (err, results) => {
+      if (err) {
+        reject(err);
+        return;
+      }
+
+      const rowCount = results[0].count;
+      if (rowCount > 0) {
+        const updateQuery = `UPDATE student_documents SET ${documentName} = ? WHERE student_id = ?`;
+        db.query(updateQuery, [value, studentId], (err, results) => {
+          if (err) {
+            reject(err);
+            return;
+          }
+          resolve(results);
+        });
+      } else {
+        const insertQuery = `INSERT INTO student_documents (student_id, ${documentName}) VALUES (?, ?)`;
+        db.query(insertQuery, [studentId, value], (err, results) => {
+          if (err) {
+            reject(err);
+            return;
+          }
+          resolve(results);
+        });
+      }
+    });
+  });
+}
 

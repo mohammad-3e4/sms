@@ -4,21 +4,23 @@ const fs = require('fs');
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
+    const studentId = req.params.student_id;
     console.log(req.body);
-    console.log(req.params);
-    const studentId = req.params.id; 
-    const documentName = req.body.document_name; 
-    const uploadPath = path.join('uploads',studentId); 
+    // const documentName = req.body.document_name; 
+    const newfile = req.file; 
     
-    fs.mkdirSync(uploadPath, { recursive: true });
-    
+    // Handle file and form data as needed
+
+    let folder_name=req.params.student_id+req.body.document_name;
+    const uploadPath = path.join('uploads',folder_name);
+    fs.mkdirSync(uploadPath, { recursive: true }); 
     cb(null, uploadPath);
   },
   filename: function (req, file, cb) {
-    cb(null, file.originalname);
+    cb(null, file.originalname); 
   }
 });
 
-const upload = multer({ storage: storage });
+const uploadFile = multer({ storage: storage });
 
-module.exports = upload;
+module.exports = uploadFile;

@@ -208,33 +208,78 @@ export const getAbsents = createAsyncThunk(
 
 export const uploadDocuments = createAsyncThunk(
   "student/uploadDocuments",
-  async ({ student_id, document_name, file }, thunkAPI) => {
-    try {
-      const formData = new FormData();
-      formData.append('file', file); 
-      formData.append('document_name', document_name); 
+  async ( formData , thunkAPI) => {
+    console.log(formData); // Ensure formData contains the expected data
 
-      const response = await fetch(`/student/upload/${student_id}`, {
+    try {
+      const response = await fetch("/student/upload/12", {
         method: "POST",
-        body: formData, 
+        body: formData,
       });
 
+      const responseData = await response.json(); // Parse response once
+      console.log(responseData);
       if (!response.ok) {
-        const errorData = await response.json();
-        console.log(errorData);
-        throw new Error(errorData.error);
+        console.log(responseData); // Log error data
+        throw new Error(responseData.error);
       }
 
-      const data = await response.json();
-      return data;
+      return responseData; // Return data on success
     } catch (error) {
-      console.log(error.message);
+      console.log(error);
       // Handle error
       return thunkAPI.rejectWithValue({ error: error.message });
     }
   }
 );
+export const getDocumentsById = createAsyncThunk(
+  "student/getDocuments",
+  async ( studentId, thunkAPI) => {
 
+    try {
+      const response = await fetch(`/student/upload/${studentId}`);
+      const responseData = await response.json(); // Parse response once
+      console.log(responseData);
+      if (!response.ok) {
+        console.log(responseData); // Log error data
+        throw new Error(responseData.error);
+      }
+
+      return responseData; // Return data on success
+    } catch (error) {
+      console.log(error);
+      // Handle error
+      return thunkAPI.rejectWithValue({ error: error.message });
+    }
+  }
+);
+export const deleteDocument = createAsyncThunk(
+  "student/deleteDocument",
+  async ( studentId, thunkAPI) => {
+
+    try {
+      const response = await fetch(`/student/upload/${studentId}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const responseData = await response.json(); // Parse response once
+      console.log(responseData);
+      if (!response.ok) {
+        console.log(responseData); // Log error data
+        throw new Error(responseData.error);
+      }
+
+      return responseData; // Return data on success
+    } catch (error) {
+      console.log(error);
+      // Handle error
+      return thunkAPI.rejectWithValue({ error: error.message });
+    }
+  }
+);
 
 const initialState = {
   students: null,
@@ -243,6 +288,7 @@ const initialState = {
   message: null,
   student: null,
   absents: null,
+  documents: null,
 };
 
 const studentSlice = createSlice({
@@ -372,6 +418,32 @@ const studentSlice = createSlice({
         state.message = action.payload.message;
       })
       .addCase(uploadDocuments.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload.error;
+      })
+      .addCase(getDocumentsById.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+        state.message = null;
+      })
+      .addCase(getDocumentsById.fulfilled, (state, action) => {
+        state.loading = false;
+        state.documents = action.payload.documents;
+      })
+      .addCase(getDocumentsById.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload.error;
+      })
+      .addCase(deleteDocument.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+        state.message = null;
+      })
+      .addCase(deleteDocument.fulfilled, (state, action) => {
+        state.loading = false;
+        state.message = action.payload.message;
+      })
+      .addCase(deleteDocument.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload.error;
       });

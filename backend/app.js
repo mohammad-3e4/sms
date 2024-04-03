@@ -11,13 +11,14 @@ const bodyParser = require("body-parser");
 dotenv.config({ path: "backend/config/config.env" });
 const {isAuthenticatedUser, authorizeRoles} = require('./middlewares/authMiddleware')
 const cookieParser = require("cookie-parser");
-
+const upload = require('express-fileupload')
 const errorMiddleware = require("./middlewares/errorMiddleware");
 
 const app = experss();
 app.use(experss.json());
+app.use(upload());
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({ extended:false }));
 app.use(cookieParser());
 
 app.use(cors("origin", "*"));
@@ -59,9 +60,9 @@ const storage = multer.diskStorage({
   },
 });
 
-const upload = multer({ storage: storage });
+const uploadFile = multer({ storage: storage });
 // login user
-app.post("/api/v1/staff",isAuthenticatedUser, authorizeRoles('admin'),  upload.single("file"), async (req, res, next) => {
+app.post("/api/v1/staff",isAuthenticatedUser, authorizeRoles('admin'),  uploadFile.single("file"), async (req, res, next) => {
   try {
     let avatar = null;
     if (req.file) {

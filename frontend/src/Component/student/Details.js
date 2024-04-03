@@ -7,11 +7,14 @@ import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { FiUpload } from "react-icons/fi";
+import axios from "axios";
 import {
   clearErrors,
   clearMessage,
   getStudentById,
-  uploadDocuments
+  uploadDocuments,
+  getDocumentsById,
+  deleteDocument,
 } from "../../redux/studentSlice";
 import { useParams } from "react-router-dom";
 
@@ -20,12 +23,13 @@ const Details = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [selectedFile, setSelectedFile] = useState(null);
-  const [documentName, setDoumentName] = useState('');
+  const [documentName, setDoumentName] = useState("");
 
   const [rotate, setRotate] = useState(false);
-  const { loading, error, message, student } = useSelector(
+  const { loading, error, message, student , documents } = useSelector(
     (state) => state.student
   );
+  const { user } = useSelector((state) => state.user);
 
   const handleRefresh = () => {
     setRotate(true);
@@ -35,6 +39,9 @@ const Details = () => {
   };
   useEffect(() => {
     dispatch(getStudentById(id));
+    if (user.role === "admin") {
+      dispatch(getDocumentsById(id));
+    }
     if (error) {
       const errorInterval = setInterval(() => {
         dispatch(clearErrors());
@@ -54,13 +61,13 @@ const Details = () => {
     setSelectedFile(file);
   };
 
-  const handleUpload = () => {
-    
+  const handleUpload = async () => {
     if (selectedFile) {
-  
-      dispatch(uploadDocuments({student_id:id, document_name:documentName, file:selectedFile}));
-    } else {
-      console.log("No file selected.");
+      const formData = new FormData();
+      formData.append("file", selectedFile);
+      formData.append("document_name", documentName);
+      // dispatch(uploadDocuments(formData));
+      dispatch(uploadDocuments(formData));
     }
   };
 
@@ -159,13 +166,21 @@ const Details = () => {
                         <select
                           id="document_name"
                           type="text"
-                          onChange={(e)=>setDoumentName(e.target.value)}
+                          onChange={(e) => setDoumentName(e.target.value)}
                           className={`border-0 px-3 py-2 placeholder-blueGray-300  focus:bg-white text-gray-600  bg-gray-200 rounded-sm text-sm shadow focus:outline-none  w-full ease-linear transition-all duration-150 `}
                         >
                           <option value="">Choose one</option>
-                          <option value="aadhar">Aadhar Card</option>
-                          <option value="marksheet">Mark SHeet</option>
-                          <option value="pan">PAN Card</option>
+                          <option value="aadhaar_card">Aadhar Card</option>
+                          <option value="last_mark_sheet">Mark Sheet</option>
+                          <option value="character_certificate">
+                            Character certificate
+                          </option>
+                          <option value="cast_certificate">
+                            Caste Certificate
+                          </option>
+                          <option value="parents_aadhaar_card">
+                            Parents Id
+                          </option>
                         </select>
                       </div>
                     </div>
